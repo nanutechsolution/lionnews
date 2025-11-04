@@ -1,31 +1,32 @@
 <x-public-layout>
 
-    <div class="mb-6 pb-4 border-b border-gray-300">
-        <h1 class="text-3xl font-bold text-gray-900">
+    <div class="mb-6 pb-4 border-b border-gray-300 dark:border-gray-700 px-4 sm:px-6 lg:px-0">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
             Kategori: {{ $category->name }}
         </h1>
 
         @if($category->description)
-        <p class="mt-2 text-lg text-gray-600">
-            {{ $category->description }}
-        </p>
+            <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
+                {{ $category->description }}
+            </p>
         @endif
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-0">
         @forelse($articles as $article)
-        <x-article-card :article="$article" />
-
+            <x-article-card :article="$article" />
         @empty
-        <div class="col-span-full text-center text-gray-500 py-10">
-            <h2 class="text-2xl font-semibold">Belum Ada Berita di Kategori Ini</h2>
-        </div>
+            <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-10">
+                <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">
+                    Belum Ada Berita di Kategori Ini
+                </h2>
+                <p class="mt-2">Silakan cek kembali nanti.</p>
+            </div>
         @endforelse
-
     </div>
 
-    <div class="mt-8">
-        {{ $articles->links() }} </div>
+    <div class="mt-8 px-4 sm:px-6 lg:px-0">
+        {{ $articles->links('pagination::tailwind') }}
+    </div>
 
 </x-public-layout>

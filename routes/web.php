@@ -1,15 +1,17 @@
 <?php
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicController;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
 Route::get('/search', [PublicController::class, 'search'])->name('search');
-Route::get('/searchdff', [PublicController::class, 'search'])->name('dashboard');
+
 Route::get('/semua-kategori', [PublicController::class, 'allCategories'])
     ->name('categories.index.all');
 // === ADMIN ===
@@ -23,6 +25,7 @@ Route::middleware(['auth', 'verified'])
         Route::resource('users', UserController::class)
             ->except('show') // Kita tidak perlu halaman 'show'
             ->middleware('can:manage-users');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     });
 
 // === PROFILE ===
@@ -35,7 +38,7 @@ Route::middleware('auth')->group(function () {
 // === PUBLIC ROUTES (taruh paling bawah) ===
 Route::get('/author/{user}', [PublicController::class, 'authorShow'])->name('author.show');
 Route::get('/tag/{tag:slug}', [PublicController::class, 'tagShow'])->name('tag.show');
+require __DIR__ . '/auth.php';
 Route::get('/{category:slug}', [PublicController::class, 'categoryShow'])->name('category.show');
 Route::get('/{category:slug}/{article:slug}', [PublicController::class, 'articleShow'])->name('article.show');
 
-require __DIR__ . '/auth.php';

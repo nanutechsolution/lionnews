@@ -1,15 +1,14 @@
 @props(['article'])
-
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col transition-shadow duration-300 hover:shadow-xl">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col transition-shadow transform duration-300 hover:shadow-xl hover:-translate-y-1">
     <a href="{{ route('article.show', [$article->category->slug, $article->slug]) }}">
-        <img class="h-48 w-full object-cover" 
+        <img class="w-full h-48 object-cover aspect-video" 
              src="{{ $article->featured_image_path ? asset('storage/' . $article->featured_image_path) : 'https://via.placeholder.com/400x250?text=LionNews' }}" 
              alt="{{ $article->title }}">
     </a>
 
     <div class="p-6 flex flex-col flex-grow">
         <a href="{{ route('category.show', $article->category->slug) }}" 
-           class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 dark:text-brand-accent dark:hover:text-white">
+           class="text-sm font-medium text-brand-primary dark:text-brand-accent transition-colors duration-200 hover:text-brand-primary/80 dark:hover:text-white">
             {{ $article->category->name }}
         </a>
 
@@ -26,7 +25,7 @@
         <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
             <span>Oleh:
                 <a href="{{ route('author.show', $article->user) }}" 
-                   class="font-medium text-brand-primary hover:text-brand-primary/80 dark:text-brand-accent dark:hover:text-white">
+                   class="font-medium text-brand-primary dark:text-brand-accent transition-colors duration-200 hover:text-brand-primary/80 dark:hover:text-white">
                     {{ $article->user->name }}
                 </a>
             </span> |

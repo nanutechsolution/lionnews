@@ -60,6 +60,22 @@
                 </div>
 
                 <div class="hidden sm:flex sm:items-center sm:ml-6" x-data="darkModeToggle()">
+                    @guest
+                    <a href="{{ route('login') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white font-heading">
+                        Login
+                    </a>
+                    @else
+                    <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white font-heading">
+                        Dashboard
+                    </a>
+                    @endguest
+
+
+
+                    <form action="{{ route('search') }}" method="GET" class="ml-4">
+                        <input type="text" name="q" placeholder="Cari berita..." class="px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm 
+                                      focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
+                    </form>
 
                     <button @click="toggle()" class="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none">
                         <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,11 +85,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 7.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                     </button>
-
-                    <form action="{{ route('search') }}" method="GET" class="ml-4">
-                        <input type="text" name="q" placeholder="Cari berita..." class="px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm 
-                                      focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
-                    </form>
                 </div>
 
                 <div class="-me-2 flex items-center sm:hidden" x-data="darkModeToggle()">
@@ -114,6 +125,32 @@
             </div>
 
             <div class="pt-4 pb-3 border-t border-blue-800">
+                @guest
+                <div class="p-4">
+                    <a href="{{ route('login') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10 font-heading">
+                        Login
+                    </a>
+                </div>
+                @else
+                <div class="px-4 mb-3">
+                    <div class="font-medium text-base text-white font-heading">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-400">{{ Auth::user()->email }}</div>
+                </div>
+                <div class="space-y-1 px-4">
+                    <a href="{{ route('dashboard') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10 font-heading">
+                        Dashboard
+                    </a>
+                    <a href="{{ route('profile.edit') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10">
+                        Edit Profile
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a href="{{ route('logout') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10" onclick="event.preventDefault(); this.closest('form').submit();">
+                            Log Out
+                        </a>
+                    </form>
+                </div>
+                @endguest
                 <div class="px-4">
                     <form action="{{ route('search') }}" method="GET">
                         <input type="text" name="q" placeholder="Cari berita..." class="w-full px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm

@@ -5,18 +5,30 @@
 
 return [
     'inertia' => env('SEO_TOOLS_INERTIA', false),
+
     'meta' => [
         /*
          * The default configurations to be used by the meta generator.
          */
         'defaults' => [
-            'title' => "It's Over 9000!", // set false to total remove
-            'titleBefore' => false, // Put defaults.title before page title, like 'It's Over 9000! - Dashboard'
-            'description' => 'For those who helped create the Genki Dama', // set false to total remove
-            'separator' => ' - ',
+            // GANTI 'title' dari "It's Over 9000!" menjadi nama brand Anda
+            'title' => 'LionNews', // <-- GANTI
+            
+            'titleBefore' => false, 
+            
+            // GANTI deskripsi default
+            'description' => 'LionNews - Menyajikan berita terkini, mendalam, dan terpercaya seputar politik, ekonomi, olahraga, dan teknologi.', // <-- GANTI
+            
+            // GANTI separator dari ' - ' menjadi ' | '
+            'separator' => ' | ', // <-- GANTI
+            
             'keywords' => [],
-            'canonical' => false, // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
-            'robots' => false, // Set to 'all', 'none' or any combination of index/noindex and follow/nofollow
+            
+            // GANTI canonical menjadi 'current' agar URL saat ini digunakan
+            'canonical' => 'current', // <-- GANTI
+            
+            // GANTI robots agar Google tahu situs ini boleh di-index
+            'robots' => 'all', // <-- GANTI
         ],
         /*
          * Webmaster tags are always added.
@@ -37,11 +49,20 @@ return [
          * The default configurations to be used by the opengraph generator.
          */
         'defaults' => [
-            'title' => 'Over 9000 Thousand!', // set false to total remove
-            'description' => 'For those who helped create the Genki Dama', // set false to total remove
-            'url' => false, // Set null for using Url::current(), set false to total remove
-            'type' => false,
-            'site_name' => false,
+            // GANTI title
+            'title' => 'LionNews', // <-- GANTI
+            
+            // GANTI deskripsi
+            'description' => 'LionNews - Menyajikan berita terkini, mendalam, dan terpercaya seputar politik, ekonomi, olahraga, dan teknologi.', // <-- GANTI
+            
+            // GANTI url menjadi null (agar otomatis diisi)
+            'url' => null, // <-- GANTI
+            
+            'type' => 'WebPage', // GANTI dari false
+            
+            // GANTI site_name
+            'site_name' => 'LionNews', // <-- GANTI
+            
             'images' => [],
         ],
     ],
@@ -50,8 +71,11 @@ return [
          * The default values to be used by the twitter cards generator.
          */
         'defaults' => [
-            //'card'        => 'summary',
-            //'site'        => '@LuizVinicius73',
+            // TAMBAHKAN: 'summary_large_image' adalah terbaik untuk berita
+            'card' => 'summary_large_image', // <-- TAMBAHKAN
+            
+            // TAMBAHKAN: Ganti dengan username Twitter Anda
+            'site' => '@LionNews', // <-- TAMBAHKAN
         ],
     ],
     'json-ld' => [
@@ -59,9 +83,15 @@ return [
          * The default configurations to be used by the json-ld generator.
          */
         'defaults' => [
-            'title' => 'Over 9000 Thousand!', // set false to total remove
-            'description' => 'For those who helped create the Genki Dama', // set false to total remove
-            'url' => false, // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
+            // GANTI title
+            'title' => 'LionNews', // <-- GANTI
+            
+            // GANTI deskripsi
+            'description' => 'LionNews - Menyajikan berita terkini, mendalam, dan terpercaya seputar politik, ekonomi, olahraga, dan teknologi.', // <-- GANTI
+            
+            // GANTI url menjadi null (agar otomatis diisi)
+            'url' => null, // <-- GANTI
+            
             'type' => 'WebPage',
             'images' => [],
         ],
