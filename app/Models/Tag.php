@@ -19,4 +19,15 @@ class Tag extends Model
     {
         return $this->belongsToMany(Article::class, 'article_tag');
     }
+
+
+    /**
+     * Mendapatkan 'key' route untuk model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug'; // Beri tahu Laravel untuk menggunakan 'slug'
+    }
 }

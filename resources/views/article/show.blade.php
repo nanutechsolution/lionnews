@@ -17,7 +17,9 @@
         </h1>
 
         <div class="mt-4 text-sm text-gray-600">
-            Oleh <span class="font-medium">{{ $article->user->name }}</span>
+            Oleh <a href="{{ route('author.show', $article->user) }}" class="font-medium hover:text-blue-600">
+                {{ $article->user->name }}
+            </a>
             <span class="mx-2">|</span>
             Diterbitkan pada {{ $article->published_at->format('d F Y, H:i') }}
         </div>
@@ -33,6 +35,18 @@
             {!! $article->body !!}
 
         </div>
+        @if($article->tags->count() > 0)
+        <div class="mt-8 pt-4 border-t border-gray-200">
+            <h4 class="text-lg font-semibold text-gray-800 mb-2">Tag Terkait:</h4>
+            <div class="flex flex-wrap gap-2">
+                @foreach($article->tags as $tag)
+                <a href="{{ route('tag.show', $tag->slug) }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-medium hover:bg-blue-600 hover:text-white">
+                    {{ $tag->name }}
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
     </div>
 </x-public-layout>

@@ -11,6 +11,12 @@ Route::get('/{category:slug}', [PublicController::class, 'categoryShow'])
     ->name('category.show');
 Route::get('/{category:slug}/{article:slug}', [PublicController::class, 'articleShow'])
     ->name('article.show');
+
+Route::get('/author/{user}', [PublicController::class, 'authorShow'])
+    ->name('author.show');
+
+Route::get('/tag/{tag:slug}', [PublicController::class, 'tagShow'])
+    ->name('tag.show');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

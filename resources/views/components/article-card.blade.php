@@ -19,7 +19,11 @@
         </p>
 
         <div class="mt-4 text-xs text-gray-500">
-            <span>Oleh: {{ $article->user->name }}</span> |
+            <span>Oleh:
+                <a href="{{ route('author.show', $article->user) }}" class="font-medium hover:text-blue-600">
+                    {{ $article->user->name }}
+                </a>
+            </span> |
             <span>{{ $article->published_at->format('d M Y') }}</span>
         </div>
     </div>

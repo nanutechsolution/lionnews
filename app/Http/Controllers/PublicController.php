@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -100,6 +102,54 @@ class PublicController extends Controller
         return view('search.results', [
             'articles' => $articles,
             'query' => $query // Kirim query asli untuk ditampilkan
+        ]);
+    }
+
+    /**
+     * Menampilkan halaman arsip penulis.
+     */
+    public function authorShow(User $user)
+    {
+        // Kita hanya ingin menampilkan jurnalis/editor, bukan admin
+        if ($user->role === 'admin') {
+            // (Atau bisa juga dilempar ke 404)
+            // return redirect()->route('home');
+        }
+
+        // Ambil semua artikel milik $user
+        // Filter hanya yang 'published'
+        // Urutkan (terbaru dulu) dan paginasi
+        $articles = $user->articles()
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->paginate(12); // Tampilkan 12 per halaman
+
+        // Kirim data user dan artikelnya ke view
+        return view('author.show', [
+            'author' => $user, // Kita ganti nama jadi 'author' agar lebih jelas di view
+            'articles' => $articles
+        ]);
+    }
+
+
+    /**
+     * Menampilkan halaman arsip tag.
+     */
+    public function tagShow(Tag $tag) // <-- Route Model Binding by Slug
+    {
+        // Ambil semua artikel yang memiliki $tag ini
+        // (Relasi 'articles' sudah kita buat di Fase 3)
+        // Filter hanya yang 'published'
+        // Urutkan (terbaru dulu) dan paginasi
+        $articles = $tag->articles()
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->paginate(12);
+
+        // Kirim data tag dan artikelnya ke view
+        return view('tag.show', [
+            'tag' => $tag,
+            'articles' => $articles
         ]);
     }
 }
