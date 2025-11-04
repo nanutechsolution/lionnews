@@ -40,6 +40,22 @@ document.addEventListener('alpine:initializing', () => {
             });
         },
     }));
+
+    Alpine.data('darkModeToggle', () => ({
+        // Baca status awal dari tag <html>
+        isDark: document.documentElement.classList.contains('dark'),
+        
+        toggle() {
+            this.isDark = !this.isDark;
+            if (this.isDark) {
+                localStorage.setItem('darkMode', 'true');
+                document.documentElement.classList.add('dark');
+            } else {
+                localStorage.setItem('darkMode', 'false');
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    }));
 });
 
 // Jalankan Alpine

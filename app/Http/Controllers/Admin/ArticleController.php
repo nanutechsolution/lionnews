@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ArticleController extends Controller
 {
@@ -23,7 +25,6 @@ class ArticleController extends Controller
         $articles = Article::with('user', 'category')
             ->latest() // Urutkan berdasarkan created_at terbaru
             ->paginate(15); // Tampilkan 15 artikel per halaman
-
         return view('admin.articles.index', ['articles' => $articles]);
     }
 
@@ -32,11 +33,13 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        // Ambil semua kategori untuk dropdown
         $categories = Category::orderBy('name')->get();
+        $tags = Tag::orderBy('name')->get(); // <-- AMBIL DATA TAG
 
-        // Tampilkan view 'create' dan kirim data $categories
-        return view('admin.articles.create', ['categories' => $categories]);
+        return view('admin.articles.create', [
+            'categories' => $categories,
+            'tags' => $tags
+        ]);
     }
 
     /**
@@ -51,8 +54,28 @@ class ArticleController extends Controller
             'excerpt' => 'required|string',
             'body' => 'required|string',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // maks 2MB
+            'status' => [ // Validasi status
+                'nullable', // Boleh null jika jurnalis
+                // Pastikan nilainya salah satu dari konstanta kita
+                Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
+            ]
         ]);
 
+        $status = Article::STATUS_DRAFT;
+        $published_at = null;
+
+        if (auth()->user()->can('publish-article')) {
+            // Jika mereka mengirim status, gunakan itu
+            $status = $request->input('status', Article::STATUS_DRAFT);
+        } else {
+            // Jurnalis hanya bisa mengirim 'Pending Review'
+            $status = Article::STATUS_PENDING;
+        }
+
+        // Jika status diubah jadi 'Published', set waktu terbit
+        if ($status === Article::STATUS_PUBLISHED) {
+            $published_at = now();
+        }
         // 2. Handle upload gambar
         $imagePath = null;
         if ($request->hasFile('featured_image')) {
@@ -62,7 +85,7 @@ class ArticleController extends Controller
         }
 
         // 3. Buat slug dan tambahkan data yang divalidasi
-        Article::create([
+        $article = Article::create([
             'title' => $validatedData['title'],
             'category_id' => $validatedData['category_id'],
             'excerpt' => $validatedData['excerpt'],
@@ -70,10 +93,10 @@ class ArticleController extends Controller
             'featured_image_path' => $imagePath,
             'user_id' => Auth::id(), // Ambil ID user yang sedang login
             'slug' => Str::slug($validatedData['title']), // Buat slug otomatis
-            'status' => 'draft', // Set status default
-            'published_at' => now(), // Set waktu publish (atau null jika ingin manual)
+            'status' => $status, // <-- Gunakan status dinamis
+            'published_at' => $published_at, // <-- Gunakan waktu terbit dinamis
         ]);
-
+        $article->tags()->sync($request->input('tags', []));
         // 4. Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.articles.index')
             ->with('success', 'Artikel baru berhasil disimpan sebagai draft.');
@@ -96,10 +119,12 @@ class ArticleController extends Controller
         // $this->authorize('update', $article); // Kita akan buat Policy ini nanti
 
         $categories = Category::orderBy('name')->get();
+        $tags = Tag::orderBy('name')->get();
 
         return view('admin.articles.edit', [
             'article' => $article,
-            'categories' => $categories
+            'categories' => $categories,
+            'tags' => $tags // <-- KIRIM KE VIEW
         ]);
     }
 
@@ -116,6 +141,10 @@ class ArticleController extends Controller
             'excerpt' => 'required|string',
             'body' => 'required|string',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => [
+                'nullable',
+                Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
+            ]
         ]);
 
         // 2. Handle upload gambar (jika ada gambar baru)
@@ -129,6 +158,27 @@ class ArticleController extends Controller
             $validatedData['featured_image_path'] = $imagePath;
         }
 
+        if (auth()->user()->can('publish-article')) {
+            $newStatus = $request->input('status', $article->status);
+
+            // Cek jika status BARU 'published' DAN status LAMA BUKAN 'published'
+            if ($newStatus === Article::STATUS_PUBLISHED && $article->status !== Article::STATUS_PUBLISHED) {
+                // Ini adalah pertama kalinya dipublish
+                $validatedData['published_at'] = now();
+            }
+            // Cek jika status diubah DARI 'published' ke 'draft'
+            else if ($newStatus !== Article::STATUS_PUBLISHED && $article->status === Article::STATUS_PUBLISHED) {
+                // Tarik kembali (un-publish)
+                $validatedData['published_at'] = null;
+            }
+
+            $validatedData['status'] = $newStatus;
+
+        } else {
+            // Jurnalis mengedit, setel kembali ke Pending Review
+            $validatedData['status'] = Article::STATUS_PENDING;
+            $validatedData['published_at'] = null; // Un-publish jika sedang diedit
+        }
         // 3. Perbarui slug jika judul berubah
         if ($validatedData['title'] !== $article->title) {
             $validatedData['slug'] = Str::slug($validatedData['title']);
@@ -136,6 +186,7 @@ class ArticleController extends Controller
 
         // 4. Update data artikel
         $article->update($validatedData);
+        $article->tags()->sync($request->input('tags', []));
 
         // 5. Redirect kembali ke halaman index
         return redirect()->route('admin.articles.index')

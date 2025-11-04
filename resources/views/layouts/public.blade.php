@@ -5,56 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'LionNews') }}</title>
+    {!! SEOMeta::generate() !!}
+    {!! OpenGraph::generate() !!}
+    {!! Twitter::generate() !!}
+    {!! JsonLd::generate() !!}
+
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' ||
+            (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+    </script>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased text-gray-900 bg-gray-100">
 
-    <header class="bg-white shadow-md sticky top-0 z-50">
+<body class="font-sans antialiased text-gray-900 bg-brand-base dark:bg-gray-900 dark:text-gray-200">
+
+    <header class="bg-brand-primary shadow-md sticky top-0 z-50" x-data="{ open: false }">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
+
                 <div class="flex-shrink-0">
-                    <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">
+                    <a href="{{ route('home') }}" class="text-2xl font-extrabold text-brand-accent hover:text-white transition duration-150">
                         LionNews
                     </a>
                 </div>
 
                 <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space-x-4">
-                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Politik</a>
-                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Olahraga</a>
+                    <div class="hidden sm:block sm:ml-6">
+                        <div class="flex space-x-4">
+
+                            @foreach($navigationCategories as $category)
+                            <a href="{{ route('category.show', $category->slug) }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 border-b-2 border-transparent 
+                      hover:text-white hover:border-brand-accent 
+                      font-heading"> {{ $category->name }}
+                            </a>
+                            @endforeach
+
+                            <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent 
+                  border-b-2 border-transparent 
+                  hover:text-white font-heading">
+                                Lainnya »
+                            </a>
+
+                        </div>
                     </div>
                 </div>
 
-                <div class="ml-4">
-                    <form action="{{ route('search') }}" method="GET">
-                        <input type="text" name="q" placeholder="Cari berita..." class="px-3 py-2 border border-gray-300 rounded-md text-sm" value="{{ request('q') }}"> </form>
+                <div class="hidden sm:flex sm:items-center sm:ml-6" x-data="darkModeToggle()">
+
+                    <button @click="toggle()" class="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none">
+                        <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        <svg x-show="isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 7.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </button>
+
+                    <form action="{{ route('search') }}" method="GET" class="ml-4">
+                        <input type="text" name="q" placeholder="Cari berita..." class="px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm 
+                                      focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
+                    </form>
+                </div>
+
+                <div class="-me-2 flex items-center sm:hidden" x-data="darkModeToggle()">
+
+                    <button @click="toggle()" class="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none">
+                        <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        <svg x-show="isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 7.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </button>
+
+                    <button @click="open = ! open" class="ml-2 inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </nav>
+
+        <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-blue-900">
+            <div class="pt-2 pb-3 space-y-1">
+                @foreach($navigationCategories as $category)
+                <a href="{{ route('category.show', $category->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium 
+                      text-gray-200 hover:text-white hover:bg-white/10 
+                      hover:border-brand-accent font-heading">
+                    {{ $category->name }}
+                </a>
+                @endforeach
+                <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent 
+                  border-b-2 border-transparent 
+                  hover:text-white font-heading">
+                    Lainnya »
+                </a>
+            </div>
+
+            <div class="pt-4 pb-3 border-t border-blue-800">
+                <div class="px-4">
+                    <form action="{{ route('search') }}" method="GET">
+                        <input type="text" name="q" placeholder="Cari berita..." class="w-full px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm
+                                      focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
+                    </form>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
 
             <div class="md:col-span-2 lg:col-span-3">
-                {{ $slot }} </div>
+                {{ $slot }}
+            </div>
 
             <aside class="md:col-span-1 lg:col-span-1 space-y-6">
-
                 @include('layouts.partials.sidebar')
-
-            </aside>
+                </Saside>
         </div>
     </main>
-    <footer class="bg-white border-t border-gray-200 mt-12">
+
+    <footer class="bg-brand-primary text-gray-300 mt-12">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-sm text-gray-500">
+            <p class="text-sm">
                 &copy; {{ date('Y') }} LionNews. All rights reserved.
             </p>
         </div>

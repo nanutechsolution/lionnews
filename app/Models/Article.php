@@ -12,12 +12,20 @@ class Article extends Model
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
     use HasFactory;
 
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PENDING = 'pending_review';
+    public const STATUS_PUBLISHED = 'published';
+
 
     /**
      * Mengizinkan semua field diisi, kecuali yang dijaga (tidak ada).
      * Alternatif dari $fillable.
      */
     protected $guarded = [];
+
+    protected $casts = [
+        'published_at' => 'datetime', 
+    ];
 
     /**
      * Mendapatkan user (penulis) yang memiliki artikel ini.

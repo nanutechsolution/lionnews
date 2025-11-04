@@ -11,6 +11,7 @@ class Tag extends Model
     /** @use HasFactory<\Database\Factories\TagFactory> */
     use HasFactory;
 
+    protected $guarded = [];
 
     /**
      * Mendapatkan semua artikel yang memiliki tag ini.

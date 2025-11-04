@@ -4,13 +4,11 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Manajemen Artikel') }}
             </h2>
-
             <a href="{{ route('admin.articles.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
                 Tulis Artikel Baru
             </a>
         </div>
     </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -49,9 +47,20 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     {{ Str::limit($article->title, 50) }} </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                            {{ $article->status == 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                        {{ ucfirst($article->status) }} </span>
+                                    @php
+                                    $statusClass = '';
+                                    if ($article->status == App\Models\Article::STATUS_PUBLISHED) {
+                                    $statusClass = 'bg-green-100 text-green-800';
+                                    } elseif ($article->status == App\Models\Article::STATUS_PENDING) {
+                                    $statusClass = 'bg-yellow-100 text-yellow-800';
+                                    } else {
+                                    $statusClass = 'bg-gray-100 text-gray-800';
+                                    }
+                                    @endphp
+
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
+                                        {{ ucfirst(str_replace('_', ' ', $article->status)) }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $article->category->name }}

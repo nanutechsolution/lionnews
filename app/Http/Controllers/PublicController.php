@@ -6,6 +6,9 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
+use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -45,6 +48,20 @@ class PublicController extends Controller
             abort(404);
         }
 
+
+        SEOMeta::setTitle($article->title);
+        SEOMeta::setDescription($article->excerpt);
+        SEOMeta::setCanonical(route('article.show', [$category->slug, $article->slug]));
+
+        OpenGraph::setTitle($article->title)
+            ->setDescription($article->excerpt)
+            ->setType('article')
+            ->addImage(asset('storage/' . $article->featured_image_path));
+
+        JsonLd::setType('Article')
+            ->setTitle($article->title)
+            ->setDescription($article->excerpt)
+            ->addImage(asset('storage/' . $article->featured_image_path));
         // Kirim data artikel ke view
         return view('article.show', [
             'article' => $article
@@ -150,6 +167,17 @@ class PublicController extends Controller
         return view('tag.show', [
             'tag' => $tag,
             'articles' => $articles
+        ]);
+    }
+
+    public function allCategories()
+    {
+        SEOMeta::setTitle('Semua Kategori Berita');
+
+        // Ambil SEMUA kategori, urutkan berdasarkan nama
+        $allCategories = Category::orderBy('name', 'asc')->get();
+        return view('category.index-all', [
+            'categories' => $allCategories
         ]);
     }
 }

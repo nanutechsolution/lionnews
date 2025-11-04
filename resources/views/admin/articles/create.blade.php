@@ -34,29 +34,59 @@
                             </select>
                             <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                         </div>
-
+                        <div class="mt-4">
+                            <x-input-label :value="__('Tags')" />
+                            <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 border p-4 rounded-md">
+                                @foreach($tags as $tag)
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="rounded border-gray-300  shadow-sm">
+                                    <span>{{ $tag->name }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
                         <div class="mt-4">
                             <x-input-label for="excerpt" :value="__('Kutipan Singkat (Lead)')" />
                             <textarea name="excerpt" id="excerpt" rows="3" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('excerpt') }}</textarea>
                         </div>
 
-                       <div class="mt-4">
-    <x-input-label for="body" :value="__('Isi Artikel')" />
+                        <div class="mt-4">
+                            <x-input-label for="body" :value="__('Isi Artikel')" />
 
-    <x-tiptap-editor name="body" :value="old('body')"
-                     class="mt-1" />
+                            <x-tiptap-editor name="body" :value="old('body')" class="mt-1" />
 
-    <x-input-error :messages="$errors->get('body')" class="mt-2" />
-</div>
+                            <x-input-error :messages="$errors->get('body')" class="mt-2" />
+                        </div>
 
                         <div class="mt-4">
                             <x-input-label for="featured_image" :value="__('Gambar Utama')" />
                             <input type="file" name="featured_image" id="featured_image" class="block mt-1 w-full">
                         </div>
 
+                        @can('publish-article')
+                        <div class="mt-4">
+                            <x-input-label for="status" :value="__('Status')" />
+                            <select name="status" id="status" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                                <option value="{{ App\Models\Article::STATUS_DRAFT }}" {{ old('status') == App\Models\Article::STATUS_DRAFT ? 'selected' : '' }}>
+                                    Draft
+                                </option>
+                                <option value="{{ App\Models\Article::STATUS_PENDING }}" {{ old('status') == App\Models\Article::STATUS_PENDING ? 'selected' : '' }}>
+                                    Pending Review
+                                </option>
+                                <option value="{{ App\Models\Article::STATUS_PUBLISHED }}" {{ old('status') == App\Models\Article::STATUS_PUBLISHED ? 'selected' : '' }}>
+                                    Published
+                                </option>
+                            </select>
+                        </div>
+                        @endcan
+
                         <div class="flex items-center justify-end mt-4">
                             <x-primary-button>
-                                {{ __('Simpan (Draft)') }}
+                                @can('publish-article')
+                                {{ __('Simpan Artikel') }}
+                                @else
+                                {{ __('Kirim untuk Review') }}
+                                @endcan
                             </x-primary-button>
                         </div>
                     </form>

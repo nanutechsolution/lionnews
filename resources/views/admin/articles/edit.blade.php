@@ -11,7 +11,8 @@
 
                     <form method="POST" action="{{ route('admin.articles.update', $article) }}" enctype="multipart/form-data">
                         @csrf
-                        @method('PUT') <div>
+                        @method('PUT')
+                        <div>
                             <x-input-label for="title" :value="__('Judul')" />
                             <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title', $article->title)" required />
                         </div>
@@ -30,7 +31,17 @@
                             </select>
                             <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                         </div>
-
+                        <div class="mt-4">
+                            <x-input-label :value="__('Tags')" />
+                            <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 border p-4 rounded-md">
+                                @foreach($tags as $tag)
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="rounded border-gray-300 ">
+                                    <span>{{ $tag->name }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
                         <div class="mt-4">
                             <x-input-label for="excerpt" :value="__('Kutipan Singkat (Lead)')" />
                             <textarea name="excerpt" id="excerpt" rows="3" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('excerpt', $article->excerpt) }}</textarea>
@@ -53,9 +64,27 @@
                             </div>
                             @endif
                         </div>
+                        @can('publish-article')
+                        <div class="mt-4">
+                            <x-input-label for="status" :value="__('Status')" />
+                            <select name="status" id="status" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                                <option value="{{ App\Models\Article::STATUS_DRAFT }}" {{ old('status', $article->status) == App\Models\Article::STATUS_DRAFT ? 'selected' : '' }}>
+                                    Draft
+                                </option>
+                                <option value="{{ App\Models\Article::STATUS_PENDING }}" {{ old('status', $article->status) == App\Models\Article::STATUS_PENDING ? 'selected' : '' }}>
+                                    Pending Review
+                                </option>
+                                <option value="{{ App\Models\Article::STATUS_PUBLISHED }}" {{ old('status', $article->status) == App\Models\Article::STATUS_PUBLISHED ? 'selected' : '' }}>
+                                    Published
+                                </option>
+                            </select>
+                        </div>
+                        @endcan
+
                         <div class="flex items-center justify-end mt-4">
                             <x-primary-button>
-                                {{ __('Perbarui Artikel') }} </x-primary-button>
+                                {{ __('Perbarui Artikel') }}
+                            </x-primary-button>
                         </div>
                     </form>
 

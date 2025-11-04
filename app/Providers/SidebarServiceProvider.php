@@ -5,6 +5,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\Tag;
 class SidebarServiceProvider extends ServiceProvider
 {
@@ -45,6 +46,22 @@ class SidebarServiceProvider extends ServiceProvider
                 'trendingArticles' => $trendingArticles,
                 'popularTags' => $popularTags
             ]);
+        });
+
+
+
+        View::composer('layouts.public', function ($view) {
+
+            // Kita cache query ini agar tidak membebani database setiap load
+            $navigationCategories = Cache::remember('navigation_categories', now()->addHour(), function () {
+                return Category::query()
+                    ->where('is_featured', true) 
+                    ->orderBy('nav_order', 'asc')  
+                    ->get();
+            });
+
+            // Kirim variabel $navigationCategories ke 'layouts.public'
+            $view->with('navigationCategories', $navigationCategories);
         });
     }
 }
