@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -30,16 +31,23 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
+            'is_featured' => 'nullable|boolean', // Validasi field baru
+            'nav_order' => 'nullable|integer',   // Validasi field baru
         ]);
 
         Category::create([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
+            'is_featured' => $validated['is_featured'] ?? false, // Simpan field baru
+            'nav_order' => $validated['nav_order'] ?? null,    // Simpan field baru
         ]);
+        
+        // PENTING: Hapus cache navigasi
+        Cache::forget('navigation_categories');
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori baru dibuat.');
     }
@@ -67,12 +75,19 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'is_featured' => 'nullable|boolean', // Validasi field baru
+            'nav_order' => 'nullable|integer',   // Validasi field baru
         ]);
 
         $category->update([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
+            'is_featured' => $validated['is_featured'] ?? false, // Simpan field baru
+            'nav_order' => $validated['nav_order'] ?? null,    // Simpan field baru
         ]);
+
+        // PENTING: Hapus cache navigasi agar perubahan menu terlihat
+        Cache::forget('navigation_categories');
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori diperbarui.');
     }

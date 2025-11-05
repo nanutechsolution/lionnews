@@ -78,11 +78,6 @@ class ArticleController extends Controller
         }
         // 2. Handle upload gambar
         $imagePath = null;
-        if ($request->hasFile('featured_image')) {
-            // Simpan gambar di 'storage/app/public/articles'
-            // Buat folder 'articles' jika belum ada
-            $imagePath = $request->file('featured_image')->store('articles', 'public');
-        }
 
         // 3. Buat slug dan tambahkan data yang divalidasi
         $article = Article::create([
@@ -96,6 +91,11 @@ class ArticleController extends Controller
             'status' => $status, // <-- Gunakan status dinamis
             'published_at' => $published_at, // <-- Gunakan waktu terbit dinamis
         ]);
+        if ($request->hasFile('featured_image')) {
+            $article
+                ->addMediaFromRequest('featured_image') // Ambil file
+                ->toMediaCollection('featured'); // Simpan ke koleksi 'featured'
+        }
         $article->tags()->sync($request->input('tags', []));
         // 4. Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.articles.index')
@@ -135,12 +135,11 @@ class ArticleController extends Controller
     {
         // 1. Validasi input
         $validatedData = $request->validate([
-            // Pastikan 'unique' mengabaikan artikel ini sendiri
             'title' => 'required|string|max:255|unique:articles,title,' . $article->id,
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required|string',
             'body' => 'required|string',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Tambahkan webp
             'status' => [
                 'nullable',
                 Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
@@ -148,46 +147,32 @@ class ArticleController extends Controller
         ]);
 
         // 2. Handle upload gambar (jika ada gambar baru)
-        if ($request->hasFile('featured_image')) {
-            // Hapus gambar lama jika ada
-            if ($article->featured_image_path) {
-                Storage::disk('public')->delete($article->featured_image_path);
-            }
-            // Simpan gambar baru
-            $imagePath = $request->file('featured_image')->store('articles', 'public');
-            $validatedData['featured_image_path'] = $imagePath;
-        }
 
         if (auth()->user()->can('publish-article')) {
             $newStatus = $request->input('status', $article->status);
-
-            // Cek jika status BARU 'published' DAN status LAMA BUKAN 'published'
             if ($newStatus === Article::STATUS_PUBLISHED && $article->status !== Article::STATUS_PUBLISHED) {
-                // Ini adalah pertama kalinya dipublish
                 $validatedData['published_at'] = now();
-            }
-            // Cek jika status diubah DARI 'published' ke 'draft'
-            else if ($newStatus !== Article::STATUS_PUBLISHED && $article->status === Article::STATUS_PUBLISHED) {
-                // Tarik kembali (un-publish)
+            } else if ($newStatus !== Article::STATUS_PUBLISHED && $article->status === Article::STATUS_PUBLISHED) {
                 $validatedData['published_at'] = null;
             }
-
             $validatedData['status'] = $newStatus;
-
         } else {
-            // Jurnalis mengedit, setel kembali ke Pending Review
             $validatedData['status'] = Article::STATUS_PENDING;
-            $validatedData['published_at'] = null; // Un-publish jika sedang diedit
+            $validatedData['published_at'] = null;
         }
         // 3. Perbarui slug jika judul berubah
         if ($validatedData['title'] !== $article->title) {
             $validatedData['slug'] = Str::slug($validatedData['title']);
         }
-
+        unset($validatedData['featured_image']);
         // 4. Update data artikel
         $article->update($validatedData);
+        if ($request->hasFile('featured_image')) {
+            $article
+                ->addMediaFromRequest('featured_image')
+                ->toMediaCollection('featured');
+        }
         $article->tags()->sync($request->input('tags', []));
-
         // 5. Redirect kembali ke halaman index
         return redirect()->route('admin.articles.index')
             ->with('success', 'Artikel berhasil diperbarui.');

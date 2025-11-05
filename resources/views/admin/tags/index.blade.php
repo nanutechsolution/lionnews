@@ -1,8 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight font-heading">
-            {{ __('Manajemen Pengguna') }}
-        </h2>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight font-heading">
+                {{ __('Manajemen Tag') }}
+            </h2>
+            
+            <a href="{{ route('admin.tags.create') }}" 
+               class="inline-flex items-center px-4 py-2 bg-brand-primary border border-transparent 
+                      rounded-md font-semibold text-xs text-white uppercase tracking-widest 
+                      hover:bg-brand-primary/80 focus:outline-none 
+                      focus:ring-2 focus:ring-brand-accent focus:ring-offset-2 
+                      dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                Buat Tag Baru
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -18,63 +29,63 @@
                     {{ session('error') }}
                 </div>
             @endif
+
             <div class="hidden md:grid md:grid-cols-4 gap-4 px-6 py-3 bg-gray-50 dark:bg-gray-700 rounded-t-lg font-medium text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 <div class="col-span-1">{{ __('Nama') }}</div>
-                <div class="col-span-1">{{ __('Email') }}</div>
-                <div class="col-span-1">{{ __('Role') }}</div>
+                <div class="col-span-1">{{ __('Slug') }}</div>
+                <div class="col-span-1">{{ __('Jumlah Artikel') }}</div>
                 <div class="col-span-1 text-right">{{ __('Aksi') }}</div>
             </div>
+
             <div class="space-y-4 md:space-y-0">
-                @forelse($users as $user)
+                @forelse($tags as $tag)
                     <div class="bg-white dark:bg-gray-800 shadow-md md:shadow-none rounded-lg p-4 md:p-0 
                                 md:grid md:grid-cols-4 md:gap-4 md:items-center 
                                 md:border-b md:border-gray-200 dark:md:border-gray-700
                                 md:rounded-none">
 
-                        <!-- Kolom Nama -->
                         <div class="md:col-span-1 md:px-6 md:py-4">
                             <div class="md:hidden text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Nama</div>
-                            <a href="{{ route('admin.users.edit', $user) }}" 
+                            <a href="{{ route('admin.tags.edit', $tag) }}" 
                                class="text-sm font-medium text-brand-primary dark:text-brand-accent hover:underline font-heading">
-                                {{ $user->name }}
+                                {{ $tag->name }}
                             </a>
                         </div>
 
                         <div class="mt-2 md:mt-0 md:col-span-1 md:px-6 md:py-4">
-                            <div class="md:hidden text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email</div>
-                            <div class="text-sm text-gray-900 dark:text-gray-300 truncate">{{ $user->email }}</div>
+                            <div class="md:hidden text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Slug</div>
+                            <div class="text-sm text-gray-900 dark:text-gray-300">{{ $tag->slug }}</div>
                         </div>
 
-                        <!-- Kolom Role -->
                         <div class="mt-2 md:mt-0 md:col-span-1 md:px-6 md:py-4">
-                            <div class="md:hidden text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Role</div>
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                {{ $user->role == 'admin' ? 'bg-red-100 dark:bg-red-800/50 text-red-800 dark:text-red-300' : '' }}
-                                {{ $user->role == 'editor' ? 'bg-blue-100 dark:bg-blue-800/50 text-blue-800 dark:text-blue-300' : '' }}
-                                {{ $user->role == 'journalist' ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200' : '' }}">
-                                {{ ucfirst($user->role) }}
-                            </span>
+                            <div class="md:hidden text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Jumlah Artikel</div>
+                            <div class="text-sm text-gray-900 dark:text-gray-300">{{ $tag->articles_count }}</div>
                         </div>
 
-                        <!-- Kolom Aksi -->
                         <div class="mt-4 md:mt-0 md:col-span-1 md:px-6 md:py-4 text-left md:text-right">
-                            <a href="{{ route('admin.users.edit', $user) }}" 
+                            <a href="{{ route('admin.tags.edit', $tag) }}" 
                                class="text-brand-primary dark:text-brand-accent hover:underline text-sm font-medium">
                                 Edit
                             </a>
+
+                            <form action="{{ route('admin.tags.destroy', $tag) }}" method="POST" class="inline-block ml-4">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        class="text-red-600 dark:text-red-400 hover:underline text-sm font-medium" 
+                                        onclick="return confirm('Yakin ingin menghapus tag ini?')">
+                                    Hapus
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @empty
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md md:shadow-none p-6 text-center text-gray-500 dark:text-gray-400">
-                        Belum ada pengguna.
+                        Belum ada tag.
                     </div>
                 @endforelse
             </div>
             
-            <div class="mt-4 p-4 bg-white dark:bg-gray-800 shadow-md md:shadow-none rounded-b-lg">
-                {{ $users->links() }}
             </div>
-
-        </div>
     </div>
 </x-app-layout>

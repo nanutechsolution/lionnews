@@ -65,7 +65,7 @@
                         Login
                     </a>
                     @else
-                    <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white font-heading">
+                    <a href="{{ route('admin.dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white font-heading">
                         Dashboard
                     </a>
                     @endguest
@@ -137,7 +137,7 @@
                     <div class="font-medium text-sm text-gray-400">{{ Auth::user()->email }}</div>
                 </div>
                 <div class="space-y-1 px-4">
-                    <a href="{{ route('dashboard') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10 font-heading">
+                    <a href="{{ route('admin.dashboard') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10 font-heading">
                         Dashboard
                     </a>
                     <a href="{{ route('profile.edit') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10">

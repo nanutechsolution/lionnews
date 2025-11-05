@@ -26,9 +26,8 @@
             Diterbitkan pada {{ $article->published_at->format('d F Y, H:i') }}
         </div>
 
-        @if($article->featured_image_path)
-        <figure class="mt-8">
-            <img class="w-full rounded-lg object-cover" src="{{ asset('storage/' . $article->featured_image_path) }}" alt="{{ $article->title }}">
+        @if($article->hasMedia('featured')) <figure class="mt-8">
+            <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') }}" alt="{{ $article->title }}">
         </figure>
         @endif
         <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">

@@ -31,16 +31,23 @@
                             </select>
                             <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                         </div>
-                        <div class="mt-4">
-                            <x-input-label :value="__('Tags')" />
-                            <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 border p-4 rounded-md">
-                                @foreach($tags as $tag)
-                                <label class="flex items-center space-x-2">
-                                    <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="rounded border-gray-300 ">
-                                    <span>{{ $tag->name }}</span>
-                                </label>
+                        @php
+                        // Siapkan data tag yang sudah ada untuk Tom Select
+                        $selectedTags = $article->tags->map(fn($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name
+                        ]);
+                        @endphp
+
+                        <div class="mt-4" wire:ignore x-data="tomselect({ initialTags: @js($selectedTags) })" x-init="init()">
+
+                            <label for="tags" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Tags') }}</label>
+                            <select id="tags" name="tags[]" multiple x-ref="tomselect" class="block mt-1 w-full" placeholder="Ketik untuk mencari tag...">
+
+                                @foreach($article->tags as $tag)
+                                <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
                                 @endforeach
-                            </div>
+                            </select>
                         </div>
                         <div class="mt-4">
                             <x-input-label for="excerpt" :value="__('Kutipan Singkat (Lead)')" />
@@ -49,20 +56,23 @@
 
                         <div class="mt-4">
                             <x-input-label for="body" :value="__('Isi Artikel')" />
-
-                            <x-tiptap-editor name="body" :value="old('body', $article->body)" class="mt-1" />
-
+                            <x-quill-editor name="body" :value="old('body', $article->body)" class="mt-1" />
                             <x-input-error :messages="$errors->get('body')" class="mt-2" />
                         </div>
 
                         <div class="mt-4">
-                            <x-input-label for="featured_image" :value="__('Ganti Gambar Utama (Opsional)')" />
-                            <input type="file" name="featured_image" id="featured_image" class="block mt-1 w-full">
-                            @if($article->featured_image_path)
+                            <label for="featured_image" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Ganti Gambar Utama (Opsional)') }}</label>
+
+                            <input type="file" name="featured_image" id="featured_image" class="block mt-1 w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0 file:text-sm file:font-semibold
+                  file:bg-brand-primary/10 file:text-brand-primary
+                  dark:file:bg-brand-primary/20 dark:file:text-brand-accent
+                  hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30" onchange="previewImage(event)">
+
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $article->featured_image_path) }}" alt="Gambar Utama" class="w-48 h-auto rounded">
+                                <img id="imagePreview" src="{{ $article->getFirstMediaUrl('featured', 'featured-thumbnail') ?: 'https://via.placeholder.com/400x250?text=No+Image' }}" alt="Preview Gambar" class="max-h-64 rounded-md border border-gray-300 dark:border-gray-600" />
                             </div>
-                            @endif
                         </div>
                         @can('publish-article')
                         <div class="mt-4">
@@ -92,4 +102,22 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('imagePreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+    </script>
+    @endpush
 </x-app-layout>

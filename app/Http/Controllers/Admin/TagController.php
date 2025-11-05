@@ -3,24 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Cache; 
+use App\Models\Tag;
 class TagController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tampilkan daftar semua tag.
      */
     public function index()
     {
-        // 'withCount' untuk menghitung relasi 'articles'
         $tags = Tag::withCount('articles')->latest()->get();
         return view('admin.tags.index', compact('tags'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Tampilkan form untuk membuat tag baru.
      */
     public function create()
     {
@@ -28,7 +27,7 @@ class TagController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan tag baru ke database.
      */
     public function store(Request $request)
     {
@@ -41,53 +40,77 @@ class TagController extends Controller
             'slug' => Str::slug($validated['name']),
         ]);
 
-        return redirect()->route('admin.tags.index')->with('success', 'Kategori baru dibuat.');
+        // Hapus cache sidebar agar tag baru muncul
+        Cache::forget('sidebar_popular_tags');
+
+        return redirect()->route('admin.tags.index')->with('success', 'Tag baru berhasil dibuat.');
     }
 
     /**
-     * Display the specified resource.
+     * Tampilkan form untuk mengedit tag.
      */
-    public function show(string $id)
+    public function edit(Tag $tag)
     {
-        //
+        return view('admin.tags.edit', compact('tag'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update tag yang ada di database.
      */
-    public function edit(Tag $Tag)
-    {
-        return view('admin.tags.edit', compact('Tag'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Tag $Tag)
+    public function update(Request $request, Tag $tag)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:tags,name,' . $Tag->id,
+            'name' => 'required|string|max:255|unique:tags,name,' . $tag->id,
         ]);
 
-        $Tag->update([
+        $tag->update([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
         ]);
 
-        return redirect()->route('admin.tags.index')->with('success', 'Kategori diperbarui.');
+        // Hapus cache sidebar agar perubahan terlihat
+        Cache::forget('sidebar_popular_tags');
+
+        return redirect()->route('admin.tags.index')->with('success', 'Tag berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus tag dari database.
      */
-    public function destroy(Tag $Tag)
+    public function destroy(Tag $tag)
     {
-        // PENTING: Mencegah penghapusan jika masih ada artikel
-        if ($Tag->articles()->count() > 0) {
-            return back()->with('error', 'Tidak bisa menghapus kategori yang masih memiliki artikel.');
+        // Mencegah penghapusan jika tag masih digunakan
+        if ($tag->articles()->count() > 0) {
+            return back()->with('error', 'Tidak bisa menghapus tag yang masih memiliki artikel.');
         }
 
-        $Tag->delete();
-        return redirect()->route('admin.tags.index')->with('success', 'Kategori dihapus.');
+        $tag->delete();
+        
+        // Hapus cache sidebar
+        Cache::forget('sidebar_popular_tags');
+
+        return redirect()->route('admin.tags.index')->with('success', 'Tag berhasil dihapus.');
+    }
+
+
+    /**
+     * Method search untuk Tom Select (AJAX).
+     * INI YANG MUNGKIN HILANG.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q', '');
+        
+        $tags = Tag::where('name', 'LIKE', "%{$query}%")
+                    ->select('id', 'name') // Tom Select butuh id dan name
+                    ->take(10) // Batasi hasil
+                    ->get();
+        // Format ulang agar Tom Select mengerti
+        $formattedTags = $tags->map(fn($tag) => [
+            'id' => $tag->id,
+            'name' => $tag->name
+        ]);
+
+        return response()->json($formattedTags);
     }
 }

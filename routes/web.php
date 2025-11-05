@@ -26,6 +26,8 @@ Route::middleware(['auth', 'verified'])
             ->except('show') // Kita tidak perlu halaman 'show'
             ->middleware('can:manage-users');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/tags/search', [TagController::class, 'search'])->name('tags.search');
+
     });
 
 // === PROFILE ===

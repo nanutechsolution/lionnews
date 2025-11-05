@@ -1,9 +1,9 @@
 @props(['article'])
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col transition-shadow transform duration-300 hover:shadow-xl hover:-translate-y-1">
     <a href="{{ route('article.show', [$article->category->slug, $article->slug]) }}">
-        <img class="w-full h-48 object-cover aspect-video" 
-             src="{{ $article->featured_image_path ? asset('storage/' . $article->featured_image_path) : 'https://via.placeholder.com/400x250?text=LionNews' }}" 
-             alt="{{ $article->title }}">
+     <img class="h-48 w-full object-cover" 
+     src="{{ $article->getFirstMediaUrl('featured', 'featured-thumbnail') ?: 'https://via.placeholder.com/400x250?text=LionNews' }}" 
+     alt="{{ $article->title }}">
     </a>
 
     <div class="p-6 flex flex-col flex-grow">
