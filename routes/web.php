@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Redirect;
@@ -29,6 +30,10 @@ Route::middleware(['auth', 'verified'])
         Route::get('/tags/search', [TagController::class, 'search'])->name('tags.search');
 
     });
+
+Route::post('/articles/{article}/comments', [CommentController::class, 'store'])
+    ->name('comments.store')
+    ->middleware('auth');
 
 // === PROFILE ===
 Route::middleware('auth')->group(function () {

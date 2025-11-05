@@ -11,6 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use CyrildeWit\EloquentViewable\InteractsWithViews;
 use CyrildeWit\EloquentViewable\Contracts\Viewable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model implements HasMedia, Viewable
 {
@@ -93,5 +94,13 @@ class Article extends Model implements HasMedia, Viewable
             ->width(1200)
             ->height(675)
             ->nonQueued();
+    }
+
+
+
+    public function comments(): HasMany
+    {
+        // Ambil komentar, urutkan dari yang terbaru
+        return $this->hasMany(Comment::class)->latest();
     }
 }

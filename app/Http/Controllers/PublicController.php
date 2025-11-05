@@ -9,6 +9,7 @@ use App\Models\User;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
 use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\TwitterCard;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -18,6 +19,7 @@ class PublicController extends Controller
      */
     public function home()
     {
+        SEOMeta::setTitle('Portal Berita Terkini dan Terpercaya');
         // Ambil 10 artikel terbaru
         // 1. Yang statusnya 'published'
         // 2. Diurutkan berdasarkan 'published_at' (terbaru dulu)
@@ -42,6 +44,8 @@ class PublicController extends Controller
      */
     public function articleShow(Category $category, Article $article)
     {
+        views($article)->record();
+
         // Pastikan artikel yang diakses sudah 'published'
         // (Atau admin yang sedang login)
         if ($article->status !== 'published' && !auth()->check()) {
@@ -56,14 +60,23 @@ class PublicController extends Controller
         OpenGraph::setTitle($article->title)
             ->setDescription($article->excerpt)
             ->setType('article')
-            ->addImage(asset('storage/' . $article->featured_image_path));
+            ->setArticle([
+                'published_time' => $article->published_at->toIso8601String(),
+                'author' => $article->user->name,
+            ]);
+
+        // PERBAIKAN: Hanya tambahkan gambar jika ada
+        if ($article->hasMedia('featured')) {
+            OpenGraph::addImage($article->getFirstMediaUrl('featured', 'featured-large'));
+        }
+
+        TwitterCard::setTitle($article->title);
 
         JsonLd::setType('Article')
             ->setTitle($article->title)
             ->setDescription($article->excerpt)
-            ->addImage(asset('storage/' . $article->featured_image_path));
+            ->setImages($article->hasMedia('featured') ? [$article->getFirstMediaUrl('featured', 'featured-large')] : []);
 
-        views($article)->record();
         // Kirim data artikel ke view
 
         return view('article.show', [
@@ -77,6 +90,8 @@ class PublicController extends Controller
      */
     public function categoryShow(Category $category)
     {
+        SEOMeta::setTitle("Kategori: " . $category->name);
+        SEOMeta::setDescription("Arsip berita terbaru untuk kategori {$category->name} di LionNews.");
         // Ambil artikel milik kategori ini
         // Filter hanya yang 'published'
         // Urutkan (terbaru dulu)
@@ -130,6 +145,8 @@ class PublicController extends Controller
      */
     public function authorShow(User $user)
     {
+        SEOMeta::setTitle("Artikel oleh: " . $user->name);
+        SEOMeta::setDescription("Kumpulan artikel yang ditulis oleh {$user->name} di LionNews.");
         // Kita hanya ingin menampilkan jurnalis/editor, bukan admin
         if ($user->role === 'admin') {
             // (Atau bisa juga dilempar ke 404)
@@ -157,6 +174,8 @@ class PublicController extends Controller
      */
     public function tagShow(Tag $tag) // <-- Route Model Binding by Slug
     {
+        SEOMeta::setTitle("Tag: " . $tag->name);
+        SEOMeta::setDescription("Arsip berita terbaru untuk tag {$tag->name} di LionNews.");
         // Ambil semua artikel yang memiliki $tag ini
         // (Relasi 'articles' sudah kita buat di Fase 3)
         // Filter hanya yang 'published'
