@@ -1,5 +1,5 @@
 <x-public-layout>
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
         <nav class="mb-4 text-sm text-gray-500 dark:text-gray-400">
             <a href="{{ route('home') }}" class="hover:text-brand-primary dark:hover:text-brand-accent">Home</a>
             <span class="mx-2">/</span>
@@ -79,7 +79,20 @@
         </div>
         @endif
     </div>
-    <div class="max-w-3xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+    @if($relatedArticles->count() > 0)
+    <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  px-4 sm:px-6 lg:px-0">
+        <h3 class="text-3xl font-bold text-brand-primary dark:text-white font-heading mb-6">
+            Baca Juga
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($relatedArticles as $relatedArticle)
+            <x-article-card :article="$relatedArticle" />
+            @endforeach
+        </div>
+    </div>
+    @endif
+    <div class="max-w-3xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  px-4 sm:px-6 lg:px-0">
         <h3 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-4">
             Komentar ({{ $article->comments->count() }})
         </h3>

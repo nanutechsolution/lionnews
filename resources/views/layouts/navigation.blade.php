@@ -41,7 +41,15 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6" x-data="darkModeToggle()">
-
+                <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium 
+              rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 
+              hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none 
+              transition ease-in-out duration-150">
+                    Kunjungi Situs
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                </a>
                 <button @click="toggle()" class="p-2 rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none">
                     <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
@@ -125,6 +133,12 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <a href="{{ route('home') }}" target="_blank" class="{{ $respLinkClasses }} {{ $respInactiveClasses }} flex items-center justify-between">
+                    <span>{{ __('Kunjungi Situs') }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                </a>
                 <a href="{{ route('profile.edit') }}" class="{{ $respLinkClasses }} {{ $respInactiveClasses }}">
                     {{ __('Profile') }}
                 </a>

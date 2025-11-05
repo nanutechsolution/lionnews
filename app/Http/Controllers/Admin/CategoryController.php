@@ -31,24 +31,24 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
-            'is_featured' => 'nullable|boolean', // Validasi field baru
-            'nav_order' => 'nullable|integer',   // Validasi field baru
+            'is_featured' => 'nullable|boolean',
+            'nav_order' => 'nullable|integer',
+            'parent_id' => 'nullable|exists:categories,id', // <-- Validasi baru
         ]);
 
         Category::create([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
-            'is_featured' => $validated['is_featured'] ?? false, // Simpan field baru
-            'nav_order' => $validated['nav_order'] ?? null,    // Simpan field baru
+            'is_featured' => $validated['is_featured'] ?? false,
+            'nav_order' => $validated['nav_order'] ?? null,
+            'parent_id' => $validated['parent_id'] ?? null, // <-- Simpan data baru
         ]);
-        
-        // PENTING: Hapus cache navigasi
-        Cache::forget('navigation_categories');
 
+        Cache::forget('navigation_categories');
         return redirect()->route('admin.categories.index')->with('success', 'Kategori baru dibuat.');
     }
 
@@ -65,7 +65,10 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('admin.categories.edit', compact('category'));
+        $categories = Category::where('id', '!=', $category->id)
+            ->orderBy('name', 'asc')->get();
+
+        return view('admin.categories.edit', compact('category', 'categories'));
     }
 
     /**
@@ -75,20 +78,20 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'is_featured' => 'nullable|boolean', // Validasi field baru
-            'nav_order' => 'nullable|integer',   // Validasi field baru
+            'is_featured' => 'nullable|boolean',
+            'nav_order' => 'nullable|integer',
+            'parent_id' => 'nullable|exists:categories,id', // <-- Validasi baru
         ]);
 
         $category->update([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
-            'is_featured' => $validated['is_featured'] ?? false, // Simpan field baru
-            'nav_order' => $validated['nav_order'] ?? null,    // Simpan field baru
+            'is_featured' => $validated['is_featured'] ?? false,
+            'nav_order' => $validated['nav_order'] ?? null,
+            'parent_id' => $validated['parent_id'] ?? null, // <-- Simpan data baru
         ]);
 
-        // PENTING: Hapus cache navigasi agar perubahan menu terlihat
         Cache::forget('navigation_categories');
-
         return redirect()->route('admin.categories.index')->with('success', 'Kategori diperbarui.');
     }
 

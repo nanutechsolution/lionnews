@@ -39,23 +39,48 @@
                 </div>
 
                 <div class="hidden sm:block sm:ml-6">
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space-x-4">
+                    <div class="flex space-x-4">
 
-                            @foreach($navigationCategories as $category)
+                        @foreach($navigationCategories as $category)
+                        <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
                             <a href="{{ route('category.show', $category->slug) }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 border-b-2 border-transparent 
-                      hover:text-white hover:border-brand-accent 
-                      font-heading"> {{ $category->name }}
-                            </a>
-                            @endforeach
+                          hover:text-white hover:border-brand-accent 
+                          font-heading flex items-center">
+                                {{ $category->name }}
 
-                            <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent 
+                                @if($category->children->count() > 0)
+                                <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                @endif
+                            </a>
+
+                            @if($category->children->count() > 0)
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-1" class="absolute z-10 -ml-4 mt-3 p-2 w-screen max-w-xs" style="display: none;">
+                                <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+                                    <div class="relative grid gap-6 bg-white dark:bg-gray-800 px-5 py-6 sm:gap-8 sm:p-8">
+
+                                        @foreach($category->children as $subCategory)
+                                        <a href="{{ route('category.show', $subCategory->slug) }}" class="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <div class="ml-4">
+                                                <p class="text-base font-medium text-brand-primary dark:text-brand-accent font-heading">
+                                                    {{ $subCategory->name }}
+                                                </p>
+                                            </div>
+                                        </a>
+                                        @endforeach
+
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        @endforeach
+
+                        <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent 
                   border-b-2 border-transparent 
                   hover:text-white font-heading">
-                                Lainnya »
-                            </a>
-
-                        </div>
+                            Lainnya »
+                        </a>
                     </div>
                 </div>
 
@@ -109,24 +134,63 @@
         </nav>
 
         <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-blue-900">
+
             <div class="pt-2 pb-3 space-y-1">
+
                 @foreach($navigationCategories as $category)
+
+                @if($category->children->count() > 0)
+
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" class="w-full flex justify-between items-center pl-3 pr-4 py-2 border-l-4 border-transparent 
+                                   text-base font-medium text-gray-200 
+                                   hover:text-white hover:bg-white/10 hover:border-brand-accent 
+                                   font-heading">
+                        <span>{{ $category->name }}</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-150" :class="{'rotate-90': open}" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <div x-show="open" x-transition class="mt-1 space-y-1 pl-8">
+                        @foreach($category->children as $subCategory)
+                        <a href="{{ route('category.show', $subCategory->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm font-medium 
+                                      text-gray-400 hover:text-white hover:bg-white/10">
+                            {{ $subCategory->name }}
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                @else
                 <a href="{{ route('category.show', $category->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium 
-                      text-gray-200 hover:text-white hover:bg-white/10 
-                      hover:border-brand-accent font-heading">
+                          text-gray-200 hover:text-white hover:bg-white/10 
+                          hover:border-brand-accent font-heading">
                     {{ $category->name }}
                 </a>
+                @endif
+
                 @endforeach
-                <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent 
-                  border-b-2 border-transparent 
-                  hover:text-white font-heading">
+
+                <a href="{{ route('categories.index.all') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium 
+                  text-brand-accent hover:text-white hover:bg-white/10 
+                  hover:border-brand-accent font-heading">
                     Lainnya »
                 </a>
             </div>
 
             <div class="pt-4 pb-3 border-t border-blue-800">
+                <div class="px-4">
+                    <form action="{{ route('search') }}" method="GET">
+                        <input type="text" name="q" placeholder="Cari berita..." class="w-full px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm
+                              focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-4 pb-3 border-t border-blue-800">
                 @guest
-                <div class="p-4">
+                <div class="px-4">
                     <a href="{{ route('login') }}" class="block w-full px-3 py-2 text-left text-base font-medium text-gray-200 rounded-md hover:bg-white/10 font-heading">
                         Login
                     </a>
@@ -151,12 +215,6 @@
                     </form>
                 </div>
                 @endguest
-                <div class="px-4">
-                    <form action="{{ route('search') }}" method="GET">
-                        <input type="text" name="q" placeholder="Cari berita..." class="w-full px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm
-                                      focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
-                    </form>
-                </div>
             </div>
         </div>
     </header>

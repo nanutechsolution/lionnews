@@ -41,7 +41,7 @@ class SidebarServiceProvider extends ServiceProvider
                     ->take(10)
                     ->get();
             });
-            $popularArticles = Article::orderByUniqueViews('desc', Period::pastDays(7))  
+            $popularArticles = Article::orderByUniqueViews('desc', Period::pastDays(7))
                 ->where('status', operator: 'published') // Hanya yang published
                 ->take(5)
                 ->get();
@@ -60,8 +60,10 @@ class SidebarServiceProvider extends ServiceProvider
             // Kita cache query ini agar tidak membebani database setiap load
             $navigationCategories = Cache::remember('navigation_categories', now()->addHour(), function () {
                 return Category::query()
-                    ->where('is_featured', true)
+                    ->where('is_featured', true)    
+                    ->whereNull('parent_id')     
                     ->orderBy('nav_order', 'asc')
+                    ->with('children')          
                     ->get();
             });
 

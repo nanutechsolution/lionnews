@@ -76,11 +76,17 @@ class PublicController extends Controller
             ->setTitle($article->title)
             ->setDescription($article->excerpt)
             ->setImages($article->hasMedia('featured') ? [$article->getFirstMediaUrl('featured', 'featured-large')] : []);
-
+        $relatedArticles = Article::where('category_id', $article->category_id)
+            ->where('status', 'published')  // Hanya yang sudah terbit
+            ->where('id', '!=', $article->id) // <-- PENTING: Kecualikan artikel ini
+            ->latest('published_at') // Ambil yang terbaru
+            ->take(3) // Batasi 3 artikel
+            ->get();
         // Kirim data artikel ke view
 
         return view('article.show', [
-            'article' => $article
+            'article' => $article,
+            'relatedArticles' => $relatedArticles
         ]);
     }
 

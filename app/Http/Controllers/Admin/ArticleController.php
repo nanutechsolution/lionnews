@@ -17,15 +17,25 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil artikel, urutkan dari yang terbaru
-        // 'with' (Eager Loading) untuk mengambil relasi 'user' dan 'category'
-        // Ini mencegah N+1 query problem (sangat efisien)
-        $articles = Article::with('user', 'category')
-            ->latest() // Urutkan berdasarkan created_at terbaru
-            ->paginate(15); // Tampilkan 15 artikel per halaman
-        return view('admin.articles.index', ['articles' => $articles]);
+        $search = $request->input('search');
+
+        $query = Article::with('user', 'category')->latest();
+        // Terapkan filter pencarian HANYA JIKA $search ada
+        $query->when($search, function ($q, $search) {
+            // 'where' untuk judul
+            $q->where('title', 'like', "%{$search}%")
+                // 'orWhereHas' untuk mencari di relasi 'user'
+                ->orWhereHas('user', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%");
+                });
+        });
+
+        // Sekarang, ambil hasilnya dengan paginasi
+        $articles = $query->paginate(15);
+
+        return view('admin.articles.index', compact('articles'));
     }
 
     /**
