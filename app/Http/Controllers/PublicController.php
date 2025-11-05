@@ -10,6 +10,7 @@ use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\TwitterCard;
+use CyrildeWit\EloquentViewable\Support\Period;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -23,21 +24,28 @@ class PublicController extends Controller
         // 1. Atur SEO (Sudah ada)
         SEOMeta::setTitle('Portal Berita Terkini dan Terpercaya');
 
-        // 2. Ambil total 15 artikel terbaru
-        $articles = Article::with('user', 'category')
+        // 2. Ambil 15 artikel TERBARU (untuk 3 blok layout)
+        $latestArticles = Article::with('user', 'category')
             ->where('status', 'published')
             ->latest('published_at')
-            ->take(15) // Kita ambil 15 untuk dibagi-bagi
+            ->take(15) // 1 (Hero) + 4 (Slider) + 10 (Daftar)
             ->get();
 
-        // 3. Bagi koleksi untuk layout kita
-        $heroArticle = $articles->shift(); // Ambil 1 artikel pertama untuk Hero
-        $topGridArticles = $articles->splice(0, 4); // Ambil 4 artikel berikutnya untuk Grid
-        $latestListArticles = $articles; // Sisanya (10 artikel) untuk Daftar
+        // 3. Bagi artikel TERBARU
+        $heroArticle = $latestArticles->shift(); // Ambil 1 artikel pertama untuk Hero
+        $topGridArticles = $latestArticles->splice(0, 4); // Ambil 4 berikutnya untuk Slider
+        $latestListArticles = $latestArticles; // Sisanya (10) untuk Daftar Umpan
 
-        // 4. Kirim 3 koleksi terpisah ke view
+        // 4. Ambil 5 artikel TERPOPULER (untuk blok trending teks)
+        $popularArticles = Article::orderByUniqueViews('desc', Period::pastDays(7))
+            ->where('status', 'published')
+            ->take(5)
+            ->get();
+
+        // 5. Kirim SEMUA 4 set data ke view
         return view('home', [
             'heroArticle' => $heroArticle,
+            'popularArticles' => $popularArticles,  // <-- Data baru
             'topGridArticles' => $topGridArticles,
             'latestListArticles' => $latestListArticles,
         ]);
