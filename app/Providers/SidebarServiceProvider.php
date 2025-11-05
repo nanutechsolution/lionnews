@@ -1,6 +1,7 @@
 <?php
 namespace App\Providers;
 
+use CyrildeWit\EloquentViewable\Support\Period;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
@@ -40,11 +41,15 @@ class SidebarServiceProvider extends ServiceProvider
                     ->take(10)
                     ->get();
             });
-
+            $popularArticles = Article::orderByUniqueViews('desc', Period::pastDays(7))  
+                ->where('status', operator: 'published') // Hanya yang published
+                ->take(5)
+                ->get();
             // Kirim data ke view
             $view->with([
                 'trendingArticles' => $trendingArticles,
-                'popularTags' => $popularTags
+                'popularTags' => $popularTags,
+                'popularArticles' => $popularArticles
             ]);
         });
 
@@ -55,8 +60,8 @@ class SidebarServiceProvider extends ServiceProvider
             // Kita cache query ini agar tidak membebani database setiap load
             $navigationCategories = Cache::remember('navigation_categories', now()->addHour(), function () {
                 return Category::query()
-                    ->where('is_featured', true) 
-                    ->orderBy('nav_order', 'asc')  
+                    ->where('is_featured', true)
+                    ->orderBy('nav_order', 'asc')
                     ->get();
             });
 

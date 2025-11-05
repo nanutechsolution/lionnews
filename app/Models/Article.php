@@ -6,14 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Spatie\MediaLibrary\HasMedia; 
-use Spatie\MediaLibrary\InteractsWithMedia; 
-use Spatie\MediaLibrary\MediaCollections\Models\Media; 
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use CyrildeWit\EloquentViewable\InteractsWithViews;
+use CyrildeWit\EloquentViewable\Contracts\Viewable;
 
-class Article extends Model implements HasMedia
+class Article extends Model implements HasMedia, Viewable
 {
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, InteractsWithViews;
 
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PENDING = 'pending_review';
@@ -27,7 +29,7 @@ class Article extends Model implements HasMedia
     protected $guarded = [];
 
     protected $casts = [
-        'published_at' => 'datetime', 
+        'published_at' => 'datetime',
     ];
 
     /**

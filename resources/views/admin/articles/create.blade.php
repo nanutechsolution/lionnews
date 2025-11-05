@@ -15,15 +15,13 @@
 
                         <div>
                             <label for="title" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Judul') }}</label>
-                            <input id="title" type="text" name="title" value="{{ old('title') }}" required autofocus
-                                   class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">
+                            <input id="title" type="text" name="title" value="{{ old('title') }}" required autofocus class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">
                             <x-input-error :messages="$errors->get('title')" class="mt-2" />
                         </div>
 
                         <div class="mt-4">
                             <label for="category_id" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Kategori') }}</label>
-                            <select name="category_id" id="category_id" required
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">
+                            <select name="category_id" id="category_id" required class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -33,16 +31,15 @@
                             </select>
                             <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                         </div>
-                        
+
                         <div class="mt-4" wire:ignore x-data="tomselect({ initialTags: [] })" x-init="init()">
                             <label for="tags" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Tags') }}</label>
                             <select id="tags" name="tags[]" multiple class="block mt-1 w-full" x-ref="tomselect" placeholder="Ketik untuk mencari tag..."></select>
                         </div>
-                        
+
                         <div class="mt-4">
                             <label for="excerpt" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Kutipan Singkat (Lead)') }}</label>
-                            <textarea name="excerpt" id="excerpt" rows="3" 
-                                      class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">{{ old('excerpt') }}</textarea>
+                            <textarea name="excerpt" id="excerpt" rows="3" class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">{{ old('excerpt') }}</textarea>
                         </div>
 
                         <div class="mt-4">
@@ -53,25 +50,31 @@
 
                         <div class="mt-4">
                             <label for="featured_image" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Gambar Utama') }}</label>
-                            <input type="file" name="featured_image" id="featured_image" 
-                                   class="block mt-1 w-full text-sm text-gray-500
+                            <input type="file" name="featured_image" id="featured_image" class="block mt-1 w-full text-sm text-gray-500
                                           file:mr-4 file:py-2 file:px-4
                                           file:rounded-md file:border-0 file:text-sm file:font-semibold
                                           file:bg-brand-primary/10 file:text-brand-primary
                                           dark:file:bg-brand-primary/20 dark:file:text-brand-accent
-                                          hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30"
-                                   onchange="previewImage(event)">
-                            
+                                          hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30" onchange="previewImage(event)">
+
                             <div class="mt-2">
-                                <img id="imagePreview" src="#" alt="Preview Gambar" 
-                                     class="hidden max-h-64 rounded-md border border-gray-300 dark:border-gray-600" />
+                                <img id="imagePreview" src="#" alt="Preview Gambar" class="hidden max-h-64 rounded-md border border-gray-300 dark:border-gray-600" />
                             </div>
+                        </div>
+                        <div class="mt-4">
+                            <label for="featured_image_caption" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                                {{ __('Keterangan Gambar Utama (Credit/Caption)') }}
+                            </label>
+                            <input id="featured_image_caption" type="text" name="featured_image_caption" value="{{ old('featured_image_caption') }}" class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 
+                  focus:border-brand-accent dark:focus:border-brand-accent 
+                  focus:ring-brand-accent dark:focus:ring-brand-accent 
+                  rounded-md shadow-sm">
+                            <x-input-error :messages="$errors->get('featured_image_caption')" class="mt-2" />
                         </div>
                         @can('publish-article')
                         <div class="mt-4">
                             <label for="status" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Status') }}</label>
-                            <select name="status" id="status" 
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">
+                            <select name="status" id="status" class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-brand-accent dark:focus:border-brand-accent focus:ring-brand-accent dark:focus:ring-brand-accent rounded-md shadow-sm">
                                 <option value="{{ App\Models\Article::STATUS_DRAFT }}" {{ old('status') == App\Models\Article::STATUS_DRAFT ? 'selected' : '' }}>Draft</option>
                                 <option value="{{ App\Models\Article::STATUS_PENDING }}" {{ old('status') == App\Models\Article::STATUS_PENDING ? 'selected' : '' }}>Pending Review</option>
                                 <option value="{{ App\Models\Article::STATUS_PUBLISHED }}" {{ old('status') == App\Models\Article::STATUS_PUBLISHED ? 'selected' : '' }}>Published</option>
@@ -80,16 +83,15 @@
                         @endcan
 
                         <div class="flex items-center justify-end mt-4">
-                            <button type="submit" 
-                                    class="inline-flex items-center px-4 py-2 bg-brand-primary border border-transparent 
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-brand-primary border border-transparent 
                                            rounded-md font-semibold text-xs text-white uppercase tracking-widest 
                                            hover:bg-brand-primary/80 focus:outline-none 
                                            focus:ring-2 focus:ring-brand-accent focus:ring-offset-2 
                                            dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                                 @can('publish-article')
-                                    {{ __('Simpan Artikel') }}
+                                {{ __('Simpan Artikel') }}
                                 @else
-                                    {{ __('Kirim untuk Review') }}
+                                {{ __('Kirim untuk Review') }}
                                 @endcan
                             </button>
                         </div>
@@ -118,6 +120,7 @@
                 preview.classList.add('hidden'); // Sembunyikan jika tidak ada file
             }
         }
+
     </script>
     @endpush
 </x-app-layout>

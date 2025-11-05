@@ -25,9 +25,39 @@
             <span class="mx-2">|</span>
             Diterbitkan pada {{ $article->published_at->format('d F Y, H:i') }}
         </div>
+        <div class="mt-6 flex flex-wrap gap-2">
+            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 
+              rounded-md font-semibold text-xs uppercase tracking-widest 
+              hover:bg-gray-700 dark:hover:bg-gray-200 transition">
+                Bagikan ke X
+            </a>
 
-        @if($article->hasMedia('featured')) <figure class="mt-8">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-brand-primary text-white 
+              rounded-md font-semibold text-xs uppercase tracking-widest 
+              hover:bg-brand-primary/80 transition">
+                Bagikan ke Facebook
+            </a>
+
+            <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white 
+              rounded-md font-semibold text-xs uppercase tracking-widest 
+              hover:bg-green-700 transition">
+                Bagikan ke WhatsApp
+            </a>
+        </div>
+        @if($article->hasMedia('featured'))
+        <figure class="mt-8">
             <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') }}" alt="{{ $article->title }}">
+
+            @php
+            // Ambil caption dari custom properties media
+            $caption = $article->getFirstMedia('featured')->getCustomProperty('caption');
+            @endphp
+
+            @if($caption)
+            <figcaption class="mt-2 text-sm text-center text-gray-600 dark:text-gray-400 italic">
+                {{ $caption }}
+            </figcaption>
+            @endif
         </figure>
         @endif
         <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">

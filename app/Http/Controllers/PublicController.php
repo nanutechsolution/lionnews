@@ -62,7 +62,10 @@ class PublicController extends Controller
             ->setTitle($article->title)
             ->setDescription($article->excerpt)
             ->addImage(asset('storage/' . $article->featured_image_path));
+
+        views($article)->record();
         // Kirim data artikel ke view
+
         return view('article.show', [
             'article' => $article
         ]);

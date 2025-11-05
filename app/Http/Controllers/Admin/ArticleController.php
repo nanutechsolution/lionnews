@@ -94,6 +94,7 @@ class ArticleController extends Controller
         if ($request->hasFile('featured_image')) {
             $article
                 ->addMediaFromRequest('featured_image') // Ambil file
+                ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
                 ->toMediaCollection('featured'); // Simpan ke koleksi 'featured'
         }
         $article->tags()->sync($request->input('tags', []));
@@ -170,7 +171,16 @@ class ArticleController extends Controller
         if ($request->hasFile('featured_image')) {
             $article
                 ->addMediaFromRequest('featured_image')
+                // TAMBAHKAN BARIS INI:
+                ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
                 ->toMediaCollection('featured');
+        } else if ($request->filled('featured_image_caption')) {
+            // Ambil media yang ada dan perbarui saja propertinya
+            $media = $article->getFirstMedia('featured');
+            if ($media) {
+                $media->setCustomProperty('caption', $request->input('featured_image_caption'));
+                $media->save(); // Jangan lupa simpan
+            }
         }
         $article->tags()->sync($request->input('tags', []));
         // 5. Redirect kembali ke halaman index

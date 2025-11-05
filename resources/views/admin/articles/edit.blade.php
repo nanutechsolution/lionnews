@@ -62,17 +62,25 @@
 
                         <div class="mt-4">
                             <label for="featured_image" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Ganti Gambar Utama (Opsional)') }}</label>
-
                             <input type="file" name="featured_image" id="featured_image" class="block mt-1 w-full text-sm text-gray-500
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-md file:border-0 file:text-sm file:font-semibold
                   file:bg-brand-primary/10 file:text-brand-primary
                   dark:file:bg-brand-primary/20 dark:file:text-brand-accent
                   hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30" onchange="previewImage(event)">
-
                             <div class="mt-2">
                                 <img id="imagePreview" src="{{ $article->getFirstMediaUrl('featured', 'featured-thumbnail') ?: 'https://via.placeholder.com/400x250?text=No+Image' }}" alt="Preview Gambar" class="max-h-64 rounded-md border border-gray-300 dark:border-gray-600" />
                             </div>
+                        </div>
+                        <div class="mt-4">
+                            <label for="featured_image_caption" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                                {{ __('Keterangan Gambar Utama (Credit/Caption)') }}
+                            </label>
+                            <input id="featured_image_caption" type="text" name="featured_image_caption" value="{{ old('featured_image_caption', $article->getFirstMedia('featured')?->getCustomProperty('caption')) }}" class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 
+                  focus:border-brand-accent dark:focus:border-brand-accent 
+                  focus:ring-brand-accent dark:focus:ring-brand-accent 
+                  rounded-md shadow-sm">
+                            <x-input-error :messages="$errors->get('featured_image_caption')" class="mt-2" />
                         </div>
                         @can('publish-article')
                         <div class="mt-4">
