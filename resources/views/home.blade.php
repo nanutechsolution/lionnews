@@ -34,9 +34,12 @@
         </h2>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="flex overflow-x-auto gap-4 pb-4 horizontal-scrollbar">
+
         @foreach($topGridArticles as $article)
-        <x-article-card :article="$article" />
+        <div class="flex-none w-80 md:w-1/4">
+            <x-article-card :article="$article" />
+        </div>
         @endforeach
     </div>
 
