@@ -1,19 +1,60 @@
 <x-public-layout>
-    <div class="mb-6 pb-4 border-b border-gray-300 dark:border-gray-700 px-4 sm:px-6 lg:px-0">
-        <h1 class="text-3xl font-bold text-brand-primary dark:text-white">
-            Berita Terbaru
-        </h1>
+
+    @if($heroArticle)
+    <style>
+        .hero-card img {
+            height: 16rem;
+        }
+
+        /* 64px */
+        .hero-card h2 {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+
+        /* text-2xl */
+        @media (min-width: 768px) {
+            .hero-card img {
+                height: 12rem;
+            }
+
+            /* Kembali normal di desktop */
+        }
+
+    </style>
+
+    <div class="mb-6 hero-card">
+        <x-article-card :article="$heroArticle" />
     </div>
-    
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-6 lg:px-0">
-        @forelse($articles as $article)
-            <x-article-card :article="$article" />
-            
+    @endif
+
+    <div class="mb-6 pb-4 border-b border-gray-300 dark:border-gray-700">
+        <h2 class="text-3xl font-bold text-brand-primary dark:text-white font-heading">
+            Berita Terpopuler
+        </h2>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        @foreach($topGridArticles as $article)
+        <x-article-card :article="$article" />
+        @endforeach
+    </div>
+
+    <div class="mt-8 mb-6 pb-4 border-b border-gray-300 dark:border-gray-700">
+        <h2 class="text-3xl font-bold text-brand-primary dark:text-white font-heading">
+            Terbaru Lainnya
+        </h2>
+    </div>
+
+    <div class="space-y-4">
+        @forelse($latestListArticles as $article)
+        <x-article-list-item :article="$article" />
         @empty
-            <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-10">
-                <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">Belum Ada Berita</h2>
-                <p class="mt-2">Silakan cek kembali nanti.</p>
-            </div>
+        <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-10">
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">Belum Ada Berita</h2>
+            <p class="mt-2">Silakan cek kembali nanti.</p>
+        </div>
         @endforelse
     </div>
+
 </x-public-layout>

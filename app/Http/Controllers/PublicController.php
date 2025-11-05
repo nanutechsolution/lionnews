@@ -17,22 +17,29 @@ class PublicController extends Controller
     /**
      * Menampilkan halaman Home (Beranda).
      */
+
     public function home()
     {
+        // 1. Atur SEO (Sudah ada)
         SEOMeta::setTitle('Portal Berita Terkini dan Terpercaya');
-        // Ambil 10 artikel terbaru
-        // 1. Yang statusnya 'published'
-        // 2. Diurutkan berdasarkan 'published_at' (terbaru dulu)
-        // 3. 'with' untuk Eager Loading (efisiensi query)
+
+        // 2. Ambil total 15 artikel terbaru
         $articles = Article::with('user', 'category')
             ->where('status', 'published')
             ->latest('published_at')
-            ->take(9) // Ambil 9 untuk grid 3x3
+            ->take(15) // Kita ambil 15 untuk dibagi-bagi
             ->get();
 
-        // Kirim data $articles ke view 'home'
+        // 3. Bagi koleksi untuk layout kita
+        $heroArticle = $articles->shift(); // Ambil 1 artikel pertama untuk Hero
+        $topGridArticles = $articles->splice(0, 4); // Ambil 4 artikel berikutnya untuk Grid
+        $latestListArticles = $articles; // Sisanya (10 artikel) untuk Daftar
+
+        // 4. Kirim 3 koleksi terpisah ke view
         return view('home', [
-            'articles' => $articles
+            'heroArticle' => $heroArticle,
+            'topGridArticles' => $topGridArticles,
+            'latestListArticles' => $latestListArticles,
         ]);
     }
 
