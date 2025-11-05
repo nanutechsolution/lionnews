@@ -25,62 +25,80 @@
             <span class="mx-2">|</span>
             Diterbitkan pada {{ $article->published_at->format('d F Y, H:i') }}
         </div>
-        <div class="mt-6 flex flex-wrap gap-2">
-            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 
-              rounded-md font-semibold text-xs uppercase tracking-widest 
-              hover:bg-gray-700 dark:hover:bg-gray-200 transition">
-                Bagikan ke X
-            </a>
-
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-brand-primary text-white 
+        {{-- <div class="mt-6 flex flex-wrap gap-2">
+            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900
+        rounded-md font-semibold text-xs uppercase tracking-widest
+        hover:bg-gray-700 dark:hover:bg-gray-200 transition">
+        Bagikan ke X
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-brand-primary text-white 
               rounded-md font-semibold text-xs uppercase tracking-widest 
               hover:bg-brand-primary/80 transition">
-                Bagikan ke Facebook
-            </a>
+            Bagikan ke Facebook
+        </a>
 
-            <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white 
+        <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white 
               rounded-md font-semibold text-xs uppercase tracking-widest 
               hover:bg-green-700 transition">
-                Bagikan ke WhatsApp
-            </a>
-        </div>
-        @if($article->hasMedia('featured'))
-        <figure class="mt-8">
-            <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') }}" alt="{{ $article->title }}">
+            Bagikan ke WhatsApp
+        </a>
+    </div> --}}
+    <div class="mt-6 flex items-center gap-3">
+        <span class=" text-gray-500 dark:text-gray-400 text-xs uppercase tracking-widest">Bagikan:</span>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition" title="Bagikan ke Facebook">
+            <x-lucide-facebook class="w-5 h-5" />
+        </a>
 
-            @php
-            // Ambil caption dari custom properties media
-            $caption = $article->getFirstMedia('featured')->getCustomProperty('caption');
-            @endphp
+        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="p-2 bg-gray-900 text-white rounded-full hover:bg-gray-700 transition" title="Bagikan ke X (Twitter)">
+            <x-lucide-twitter class="w-5 h-5" />
+        </a>
 
-            @if($caption)
-            <figcaption class="mt-2 text-sm text-center text-gray-600 dark:text-gray-400 italic">
-                {{ $caption }}
-            </figcaption>
-            @endif
-        </figure>
+        <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition" title="Bagikan ke WhatsApp">
+            <x-lucide-message-circle class="w-5 h-5" />
+        </a>
+
+        <a href="mailto:?subject={{ urlencode($article->title) }}&body={{ urlencode(request()->url()) }}" class="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition" title="Kirim lewat Email">
+            <x-lucide-mail class="w-5 h-5" />
+        </a>
+    </div>
+
+    @if($article->hasMedia('featured'))
+    <figure class="mt-8">
+        <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') }}" alt="{{ $article->title }}">
+
+        @php
+        // Ambil caption dari custom properties media
+        $caption = $article->getFirstMedia('featured')->getCustomProperty('caption');
+        @endphp
+
+        @if($caption)
+        <figcaption class="mt-2 text-sm text-center text-gray-600 dark:text-gray-400 italic">
+            {{ $caption }}
+        </figcaption>
         @endif
-        {{-- <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
+    </figure>
+    @endif
+    {{-- <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
             {!! $article->body !!}
         </div> --}}
-        <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
-            {!! $article->processed_body !!}
-        </div>
-        @if($article->tags->count() > 0)
-        <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-2 font-heading">Tag Terkait:</h4>
-            <div class="flex flex-wrap gap-2">
-                @foreach($article->tags as $tag)
-                <a href="{{ route('tag.show', $tag->slug) }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-medium 
+    <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
+        {!! $article->processed_body !!}
+    </div>
+    @if($article->tags->count() > 0)
+    <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-2 font-heading">Tag Terkait:</h4>
+        <div class="flex flex-wrap gap-2">
+            @foreach($article->tags as $tag)
+            <a href="{{ route('tag.show', $tag->slug) }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-medium 
                               hover:bg-brand-primary hover:text-white 
                               dark:bg-gray-700 dark:text-gray-200 
                               dark:hover:bg-brand-accent dark:hover:text-brand-primary">
-                    {{ $tag->name }}
-                </a>
-                @endforeach
-            </div>
+                {{ $tag->name }}
+            </a>
+            @endforeach
         </div>
-        @endif
+    </div>
+    @endif
     </div>
     @if($relatedArticles->count() > 0)
     <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  sm:px-6 lg:px-0">
