@@ -1,12 +1,12 @@
 <x-public-layout>
 
-    <div class="mb-6 pb-4 border-b border-gray-300  lg:px-0">
+    <div class="mb-6 pb-4 border-b border-gray-300 ">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
             Tag: {{ $tag->name }}
         </h1>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 px-4 sm:px-6 lg:px-0">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @forelse($articles as $article)
         <x-article-card :article="$article" />
         @empty
