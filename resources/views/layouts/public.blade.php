@@ -219,18 +219,18 @@
         </div>
     </header>
 
-   <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        
-        <div class="md:col-span-2 lg:col-span-3">
-            {{ $slot }} </div>
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
 
-        <aside class="md:col-span-1 lg:col-span-1 space-y-6">
-            @include('layouts.partials.sidebar')
-        </aside>
-    </div>
-</main>
+            <div class="md:col-span-2 lg:col-span-3">
+                {{ $slot }}
+            </div>
+
+            <aside class="md:col-span-1 lg:col-span-1 space-y-6">
+                @include('layouts.partials.sidebar')
+            </aside>
+        </div>
+    </main>
     <footer class="bg-brand-primary text-gray-300 mt-12">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
             <p class="text-sm">
