@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Memaksa video (iframe) di dalam konten artikel 
+  agar responsif dan menjaga rasio 16:9 
+*/
+.prose .ql-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio (9 / 16 = 0.5625) */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.prose .ql-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem; /* rounded-lg */
+}
