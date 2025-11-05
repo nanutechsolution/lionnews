@@ -122,8 +122,6 @@
                 <p class="text-gray-700 dark:text-gray-300">
                     Silakan
                     <a href="{{ route('login') }}" class="font-bold text-brand-primary dark:text-brand-accent hover:underline">Login</a>
-                    atau
-                    <a href="{{ route('register') }}" class="font-bold text-brand-primary dark:text-brand-accent hover:underline">Register</a>
                     untuk berkomentar.
                 </p>
             </div>
