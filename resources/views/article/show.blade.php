@@ -1,5 +1,5 @@
 <x-public-layout>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-0">
         <nav class="mb-4 text-sm text-gray-500 dark:text-gray-400">
             <a href="{{ route('home') }}" class="hover:text-brand-primary dark:hover:text-brand-accent">Home</a>
             <span class="mx-2">/</span>
@@ -26,19 +26,19 @@
             Diterbitkan pada {{ $article->published_at->format('d F Y, H:i') }}
         </div>
         <div class="mt-6 flex flex-wrap gap-2">
-            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 
+            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="inline-flex items-center py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 
               rounded-md font-semibold text-xs uppercase tracking-widest 
               hover:bg-gray-700 dark:hover:bg-gray-200 transition">
                 Bagikan ke X
             </a>
 
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-brand-primary text-white 
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="inline-flex items-center py-2 bg-brand-primary text-white 
               rounded-md font-semibold text-xs uppercase tracking-widest 
               hover:bg-brand-primary/80 transition">
                 Bagikan ke Facebook
             </a>
 
-            <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 text-white 
+            <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="inline-flex items-center py-2 bg-green-600 text-white 
               rounded-md font-semibold text-xs uppercase tracking-widest 
               hover:bg-green-700 transition">
                 Bagikan ke WhatsApp
@@ -80,7 +80,7 @@
         @endif
     </div>
     @if($relatedArticles->count() > 0)
-    <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  px-4 sm:px-6 lg:px-0">
+    <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  sm:px-6 lg:px-0">
         <h3 class="text-3xl font-bold text-brand-primary dark:text-white font-heading mb-6">
             Baca Juga
         </h3>
@@ -92,7 +92,7 @@
         </div>
     </div>
     @endif
-    <div class="max-w-3xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  px-4 sm:px-6 lg:px-0">
+    <div class="max-w-3xl mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700  sm:px-6 lg:px-0">
         <h3 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-4">
             Komentar ({{ $article->comments->count() }})
         </h3>
