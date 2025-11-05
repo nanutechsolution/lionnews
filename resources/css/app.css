@@ -1,30 +1,6 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
-/* Memaksa video (iframe) di dalam konten artikel 
-  agar responsif dan menjaga rasio 16:9 
-*/
-.prose .ql-video {
-    position: relative;
-    width: 100%;
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
-
-    /* Gunakan aspect-ratio 16:9 sebagai default */
-    aspect-ratio: 16 / 9;
-
-    /* Override khusus untuk TikTok (yang sering vertikal 
-      atau memiliki rasio aneh) 
-    */
-    iframe[src*="tiktok.com"] {
-        aspect-ratio: 9 / 16; /* Vertikal */
-        max-width: 325px; /* Lebar standar embed TikTok */
-        margin-left: auto;
-        margin-right: auto;
-        height: auto; /* Biarkan tinggi otomatis */
-    }
-}
-
+@tailwind utilities; 
 .prose .ql-video iframe {
     position: absolute;
     top: 0;
