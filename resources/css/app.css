@@ -6,12 +6,23 @@
 */
 .prose .ql-video {
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio (9 / 16 = 0.5625) */
-    height: 0;
-    overflow: hidden;
-    max-width: 100%;
+    width: 100%;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
+
+    /* Gunakan aspect-ratio 16:9 sebagai default */
+    aspect-ratio: 16 / 9;
+
+    /* Override khusus untuk TikTok (yang sering vertikal 
+      atau memiliki rasio aneh) 
+    */
+    iframe[src*="tiktok.com"] {
+        aspect-ratio: 9 / 16; /* Vertikal */
+        max-width: 325px; /* Lebar standar embed TikTok */
+        margin-left: auto;
+        margin-right: auto;
+        height: auto; /* Biarkan tinggi otomatis */
+    }
 }
 
 .prose .ql-video iframe {
