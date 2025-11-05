@@ -1,6 +1,6 @@
 <x-public-layout>
 
-    <div class="mb-6 pb-4 border-b border-gray-300 dark:border-gray-700  sm:px-6 lg:px-0">
+    <div class="mb-6 pb-4 border-b border-gray-300 dark:border-gray-700">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
             Kategori: {{ $category->name }}
         </h1>
@@ -12,7 +12,7 @@
         @endif
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6  sm:px-6 lg:px-0">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($articles as $article)
         <x-article-card :article="$article" />
         @empty

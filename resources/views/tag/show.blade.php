@@ -1,6 +1,6 @@
 <x-public-layout>
 
-    <div class="mb-6 pb-4 border-b border-gray-300 px-4 sm:px-6 lg:px-0">
+    <div class="mb-6 pb-4 border-b border-gray-300  lg:px-0">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
             Tag: {{ $tag->name }}
         </h1>
