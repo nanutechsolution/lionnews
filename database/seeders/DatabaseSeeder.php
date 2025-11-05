@@ -2,20 +2,17 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Article;
 use App\Models\Tag;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         // 1. Nonaktifkan cek foreign key
@@ -47,35 +44,37 @@ class DatabaseSeeder extends Seeder
         $journalists = User::factory(10)->create();
 
         // ----- 6. Buat Kategori LionNews -----
-        $categoryNames = [
-            'Nasional',
-            'Ekonomi',
-            'Sumba',
-            'Budaya & Tradisi',
-            'Pariwisata & Travel',
-            'Kriminal & Hukum',
-            'Kesehatan',
-            'Infrastruktur & Transportasi',
-            'Energi & Lingkungan',
-            'Teknologi & Sains',
-            'Olahraga',
-            'Opini & Editorial',
+        $categoryData = [
+            ['name' => 'Nasional', 'description' => 'Berita politik, kebijakan pemerintah, dan isu nasional.', 'is_featured' => 1, 'nav_order' => 1],
+            ['name' => 'Ekonomi', 'description' => 'Bisnis, pasar, investasi, UMKM, dan ekonomi lokal/nasional.', 'is_featured' => 1, 'nav_order' => 2],
+            ['name' => 'Sumba', 'description' => 'Berita khusus Sumba, budaya, pariwisata, dan sosial lokal.', 'is_featured' => 0, 'nav_order' => 3],
+            ['name' => 'Budaya & Tradisi', 'description' => 'Adat, seni, festival, dan budaya lokal.', 'is_featured' => 0, 'nav_order' => 4],
+            ['name' => 'Pariwisata & Travel', 'description' => 'Destinasi wisata, tips traveling, dan atraksi lokal.', 'is_featured' => 0, 'nav_order' => 5],
+            ['name' => 'Kriminal & Hukum', 'description' => 'Kasus hukum, kriminalitas, dan berita kepolisian.', 'is_featured' => 0, 'nav_order' => 6],
+            ['name' => 'Kesehatan', 'description' => 'Berita kesehatan, penyakit, rumah sakit, dan tips hidup sehat.', 'is_featured' => 0, 'nav_order' => 7],
+            ['name' => 'Infrastruktur & Transportasi', 'description' => 'Pembangunan jalan, bandara, pelabuhan, dan transportasi umum.', 'is_featured' => 0, 'nav_order' => 8],
+            ['name' => 'Energi & Lingkungan', 'description' => 'Energi terbarukan, lingkungan, dan bencana alam.', 'is_featured' => 0, 'nav_order' => 9],
+            ['name' => 'Teknologi & Sains', 'description' => 'Inovasi, gadget, penelitian, dan sains populer.', 'is_featured' => 0, 'nav_order' => 10],
+            ['name' => 'Olahraga', 'description' => 'Berita olahraga lokal dan nasional, atlet, dan turnamen.', 'is_featured' => 0, 'nav_order' => 11],
+            ['name' => 'Opini & Editorial', 'description' => 'Analisis, komentar, dan kolom opini.', 'is_featured' => 0, 'nav_order' => 12],
         ];
 
         $categories = collect();
-        foreach ($categoryNames as $name) {
+        foreach ($categoryData as $cat) {
             $category = Category::create([
-                'name' => $name,
-                'slug' => Str::slug($name),
+                'name' => $cat['name'],
+                'slug' => Str::slug($cat['name']),
+                'description' => $cat['description'],
+                'is_featured' => $cat['is_featured'],
+                'nav_order' => $cat['nav_order'],
             ]);
-            $categories->put($name, $category);
+            $categories->put($cat['name'], $category);
         }
 
         // ----- 7. Buat Tag Dummy -----
         $tags = Tag::factory(15)->create();
 
         // ----- 8. Buat Artikel Dummy -----
-        // 30 artikel published
         Article::factory(30)->create([
             'user_id' => $journalists->random()->id,
             'category_id' => $categories->random()->id,
@@ -83,13 +82,11 @@ class DatabaseSeeder extends Seeder
             $article->tags()->attach($tags->random(rand(1, 3))->pluck('id')->toArray());
         });
 
-        // 5 draft
         Article::factory(5)->draft()->create([
             'user_id' => $journalists->random()->id,
             'category_id' => $categories->random()->id,
         ]);
 
-        // 3 pending
         Article::factory(3)->pending()->create([
             'user_id' => $journalists->random()->id,
             'category_id' => $categories->random()->id,
@@ -109,7 +106,6 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Kuda Sandelwood, Ikon Sumba yang Mulai Terlupakan Akibat Modernisasi', 'tags' => ['Budaya','Berita Sumba','Kuda Sandelwood']],
         ];
 
-        // Buat Tag Sumba jika belum ada
         $allSumbaTags = collect($sumbaTitles)->flatMap(fn($item) => $item['tags'])->unique();
         $tagModels = collect();
         foreach ($allSumbaTags as $tagName) {
@@ -120,7 +116,6 @@ class DatabaseSeeder extends Seeder
             $tagModels->put($tagName, $tag->id);
         }
 
-        // Buat Artikel Sumba
         foreach ($sumbaTitles as $item) {
             $categoryId = ($item['tags'][0] == 'Ekonomi') ? $categories->get('Ekonomi')->id : $categories->get('Sumba')->id;
 
