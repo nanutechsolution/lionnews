@@ -1,30 +1,8 @@
 <x-public-layout>
 
     @if($heroArticle)
-    <style>
-        .hero-card img {
-            height: 16rem;
-        }
-
-        /* 64px */
-        .hero-card h2 {
-            font-size: 1.5rem;
-            line-height: 2rem;
-        }
-
-        /* text-2xl */
-        @media (min-width: 768px) {
-            .hero-card img {
-                height: 12rem;
-            }
-
-            /* Kembali normal di desktop */
-        }
-
-    </style>
-
-    <div class="mb-6 hero-card">
-        <x-article-card :article="$heroArticle" />
+    <div class="mb-6">
+        <x-article-hero-card :article="$heroArticle" />
     </div>
     @endif
 
