@@ -60,8 +60,11 @@
             @endif
         </figure>
         @endif
-        <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
+        {{-- <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
             {!! $article->body !!}
+        </div> --}}
+        <div class="mt-8 prose prose-lg max-w-none dark:prose-invert">
+            {!! $article->processed_body !!}
         </div>
         @if($article->tags->count() > 0)
         <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">

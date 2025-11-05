@@ -19,10 +19,24 @@ const ALLOWED_VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com', 'facebook.c
 function transformUrl(url) {
     let embedUrl = url;
 
+    // =======================================================
+    // PERBAIKAN LOGIKA FACEBOOK
+    // =======================================================
+    // Cek apakah ini link /share/ atau /watch/ atau /videos/
     if (url.includes('facebook.com')) {
-        // Ubah URL Facebook Watch menjadi URL embed plugin
-        embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560`;
+        
+        // Kita tidak perlu mengubah link 'share' atau 'watch'. 
+        // Plugin Facebook (video.php) cukup pintar untuk 
+        // menanganinya JIKA kita memberinya URL yang bersih.
+        
+        // 1. Bersihkan parameter (cth: ?mibextid=...)
+        const cleanUrl = url.split('?')[0]; 
+        
+        // 2. Gunakan URL yang sudah bersih itu untuk 'href'
+        embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(cleanUrl)}&show_text=false&width=560`;
     } 
+    // =======================================================
+
     else if (url.includes('tiktok.com')) {
         // Ekstrak ID video TikTok
         const match = url.match(/tiktok\.com\/.*\/video\/(\d+)/);
