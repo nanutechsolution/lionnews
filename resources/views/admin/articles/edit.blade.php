@@ -83,14 +83,14 @@
                                       dark:file:bg-brand-primary/20 dark:file:text-brand-accent
                                       hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30" onchange="previewImage(event)">
 
-                                <button type="button" @click="$dispatch('open-media-library', (selectedMedia) => {
+                                {{-- <button type="button" @click="$dispatch('open-media-library', (selectedMedia) => {
                                             document.getElementById('imagePreview').src = selectedMedia.url;
                                             document.getElementById('imagePreview').classList.remove('hidden');
                                             document.getElementById('selected_media_id').value = selectedMedia.id;
                                             document.getElementById('featured_image_caption').value = selectedMedia.caption || '';
                                         })" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition duration-150">
                                     {{ __('Pilih dari Pustaka') }}
-                                </button>
+                                </button> --}}
                             </div>
 
                             <input type="hidden" name="selected_media_id" id="selected_media_id" value="">
