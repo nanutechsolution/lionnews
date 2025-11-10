@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Media;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,7 +68,9 @@ class ArticleController extends Controller
             'status' => [ // Validasi status
                 'nullable', // Boleh null jika jurnalis
                 Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
-            ]
+            ],
+            'is_hero_pinned' => 'nullable|boolean',
+            'is_editors_pick' => 'nullable|boolean',
         ]);
 
         $status = Article::STATUS_DRAFT;
@@ -97,14 +100,32 @@ class ArticleController extends Controller
             'featured_image_path' => $imagePath,
             'user_id' => Auth::id(),
             'slug' => Str::slug($validatedData['title']),
-            'status' => $status, // <-- Gunakan status dinamis
+            'status' => $status,
             'published_at' => $published_at,
+            'is_hero_pinned' => $request->has('is_hero_pinned'),
+            'is_editors_pick' => $request->has('is_editors_pick'),
         ]);
+        // if ($request->hasFile('featured_image')) {
+        //     $article
+        //         ->addMediaFromRequest('featured_image') // Ambil file
+        //         ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
+        //         ->toMediaCollection('featured'); // Simpan ke koleksi 'featured'
+        // }
         if ($request->hasFile('featured_image')) {
-            $article
-                ->addMediaFromRequest('featured_image') // Ambil file
-                ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
-                ->toMediaCollection('featured'); // Simpan ke koleksi 'featured'
+            // Upload gambar baru
+            $article->clearMediaCollection('featured_image'); // Hapus yang lama
+            $article->addMediaFromRequest('featured_image')->toMediaCollection('featured_image');
+        } elseif ($request->filled('selected_media_id')) {
+            // Gunakan gambar dari pustaka yang sudah ada
+            $media = Media::find($request->input('selected_media_id'));
+            if ($media) {
+                $article->clearMediaCollection('featured_image'); // Hapus yang lama
+                $media->copy($article, 'featured_image'); // Salin media ke artikel ini
+            }
+        } else {
+            // Jika tidak ada upload dan tidak ada pilihan dari pustaka,
+            // dan artikel sebelumnya punya gambar, biarkan saja.
+            // Jika tidak ada keduanya, pastikan tidak ada gambar (atau bisa diatur default)
         }
         $article->tags()->sync($request->input('tags', []));
         // 4. Redirect kembali ke halaman index dengan pesan sukses
@@ -175,6 +196,9 @@ class ArticleController extends Controller
             $validatedData['slug'] = Str::slug($validatedData['title']);
         }
         unset($validatedData['featured_image']);
+
+        $validatedData['is_hero_pinned'] = $request->has('is_hero_pinned');
+        $validatedData['is_editors_pick'] = $request->has('is_editors_pick');
         // 4. Update data artikel
         $article->update($validatedData);
         if ($request->hasFile('featured_image')) {

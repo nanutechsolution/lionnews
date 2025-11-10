@@ -38,6 +38,9 @@
                     <a href="{{ route('admin.users.index') }}" class="{{ $linkClasses }} {{ request()->routeIs('admin.users.*') ? $activeClasses : $inactiveClasses }}">
                         {{ __('Pengguna') }}
                     </a>
+                    <a href="{{ route('admin.settings.index') }}" class="{{ $linkClasses }} {{ request()->routeIs('admin.settings.*') ? $activeClasses : $inactiveClasses }}">
+                        {{ __('Pengaturan') }}
+                    </a>
 
                     @endcan
                 </div>
@@ -129,6 +132,9 @@
             @can('manage-users')
             <a href="{{ route('admin.users.index') }}" class="{{ $respLinkClasses }} {{ request()->routeIs('admin.users.*') ? $respActiveClasses : $respInactiveClasses }}">
                 {{ __('Pengguna') }}
+            </a>
+            <a href="{{ route('admin.settings.index') }}" class="{{ $respLinkClasses }} {{ request()->routeIs('admin.settings.*') ? $respActiveClasses : $respInactiveClasses }}">
+                {{ __('Pengaturan') }}
             </a>
             @endcan
         </div>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\Tag;
 class SidebarServiceProvider extends ServiceProvider
 {
@@ -105,11 +106,14 @@ class SidebarServiceProvider extends ServiceProvider
                     })
                     ->exists(); // 4. Cukup cek 'exists' (true/false), sangat cepat.
             });
-
+            $breakingNews = Cache::remember('breaking_news_settings', now()->addMinute(), function () {
+                return Setting::first();
+            });
             // Kirim variabel $navigationCategories ke 'layouts.public'
             $view->with([
                 'navigationCategories' => $navigationCategories,
-                'hasOtherCategories' => $hasOtherCategories
+                'hasOtherCategories' => $hasOtherCategories,
+                'breakingNews' => $breakingNews
             ]);
         });
     }

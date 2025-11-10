@@ -22,28 +22,71 @@ class PublicController extends Controller
      */
     public function home()
     {
-        // 1. Atur SEO (Sudah ada)
         SEOMeta::setTitle('Portal Berita Terkini dan Terpercaya');
-        // 2. Ambil 15 artikel TERBARU (untuk 3 blok layout)
-        $latestArticles = Article::with('user', 'category')
+
+        // Kumpulan ID untuk dikecualikan agar tidak duplikat
+        $excludeIds = [];
+
+        // ===========================================
+        // 1. LOGIKA BLOK HERO (KONTROL EDITOR)
+        // ===========================================
+        // Coba cari artikel yang di-pin oleh Editor
+        $heroArticle = Article::with('user', 'category')
             ->where('status', 'published')
-            ->latest('published_at')
-            ->take(15) // 1 (Hero) + 4 (Slider) + 10 (Daftar)
-            ->get();
-        // 3. Bagi artikel TERBARU
-        $heroArticle = $latestArticles->shift(); // Ambil 1 artikel pertama untuk Hero
-        $topGridArticles = $latestArticles->splice(0, 4); // Ambil 4 berikutnya untuk Slider
-        $latestListArticles = $latestArticles; // Sisanya (10) untuk Daftar Umpan
-        // 4. Ambil 5 artikel TERPOPULER (untuk blok trending teks)
+            ->where('is_hero_pinned', true)
+            ->latest('published_at') // Ambil yang di-pin terbaru
+            ->first();
+
+        // JIKA TIDAK ADA YANG DI-PIN, ambil saja yang terbaru
+        if (!$heroArticle) {
+            $heroArticle = Article::with('user', 'category')
+                ->where('status', 'published')
+                ->latest('published_at')
+                ->first();
+        }
+
+        // Tambahkan ID Hero ke daftar pengecualian
+        if ($heroArticle) {
+            $excludeIds[] = $heroArticle->id;
+        }
+
+        // ===========================================
+        // 2. LOGIKA BLOK POPULER (TETAP OTOMATIS)
+        // ===========================================
         $popularArticles = Article::orderByUniqueViews('desc', Period::pastDays(7))
             ->where('status', 'published')
+            ->whereNotIn('id', $excludeIds) // Kecualikan hero
             ->take(5)
             ->get();
 
-        // 5. Kirim SEMUA 4 set data ke view
+        // ===========================================
+        // 3. LOGIKA BLOK SLIDER (KONTROL EDITOR)
+        // ===========================================
+        $topGridArticles = Article::with('user', 'category')
+            ->where('status', 'published')
+            ->where('is_editors_pick', true) // <-- Ambil Pilihan Editor
+            ->whereNotIn('id', $excludeIds) // Kecualikan hero
+            ->latest('published_at')
+            ->take(4) // Ambil 4
+            ->get();
+
+        // Tambahkan ID Pilihan Editor ke daftar pengecualian
+        $excludeIds = array_merge($excludeIds, $topGridArticles->pluck('id')->toArray());
+
+        // ===========================================
+        // 4. LOGIKA BLOK UMPAN (FEED)
+        // ===========================================
+        $latestListArticles = Article::with('user', 'category')
+            ->where('status', 'published')
+            ->whereNotIn('id', $excludeIds) // Kecualikan SEMUA yang sudah tampil
+            ->latest('published_at')
+            ->take(10) // Sisanya 10
+            ->get();
+
+        // 5. Kirim semua 4 set data ke view
         return view('home', [
             'heroArticle' => $heroArticle,
-            'popularArticles' => $popularArticles,  // <-- Data baru
+            'popularArticles' => $popularArticles,
             'topGridArticles' => $topGridArticles,
             'latestListArticles' => $latestListArticles,
         ]);
@@ -153,7 +196,7 @@ class PublicController extends Controller
         // 4. Kirim hasil ke view
         return view('search.results', [
             'articles' => $articles,
-            'query' => $query // Kirim query asli untuk ditampilkan
+            'query' => $query
         ]);
     }
 

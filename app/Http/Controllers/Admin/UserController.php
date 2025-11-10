@@ -25,23 +25,32 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'role' => [
-                'required',
-                Rule::in(['journalist', 'editor', 'admin']), // Pastikan role-nya valid
-            ],
+            'role' => ['required', Rule::in(['journalist', 'editor', 'admin'])],
+            // Validasi field baru
+            'bio' => 'nullable|string|max:1000',
+            'twitter_handle' => 'nullable|string|max:50',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5024', // maks 1MB
         ]);
 
+        unset($validatedData['avatar']);
+
         // CEK KEAMANAN: Jangan biarkan admin terakhir menurunkan jabatannya sendiri
-        if ($user->id === auth()->id() && 
-            $user->role === 'admin' && 
-            $request->role !== 'admin') 
-        {
+        if (
+            $user->id === auth()->id() &&
+            $user->role === 'admin' &&
+            $request->role !== 'admin'
+        ) {
             return back()->with('error', 'Anda tidak bisa menurunkan role admin Anda sendiri.');
+        }
+        if ($request->hasFile('avatar')) {
+            $user
+                ->addMediaFromRequest('avatar')
+                ->toMediaCollection('avatar');
         }
 
         $user->update($validatedData);
 
         return redirect()->route('admin.users.index')->with('success', 'Role pengguna berhasil diperbarui.');
     }
-    
+
 }

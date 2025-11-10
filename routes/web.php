@@ -3,6 +3,7 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CommentController;
@@ -29,6 +30,11 @@ Route::middleware(['auth', 'verified'])
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/tags/search', [TagController::class, 'search'])->name('tags.search');
         Route::resource('pages', PageController::class)->except('show');
+        Route::get('/media', [App\Http\Controllers\Admin\MediaController::class, 'index'])->name('media.index');
+        Route::middleware('can:manage-users')->group(function () {
+            Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+            Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        });
     });
 
 Route::post('/articles/{article}/comments', [CommentController::class, 'store'])

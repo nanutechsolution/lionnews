@@ -1,7 +1,8 @@
 import './bootstrap';
+import './media-library';
 import Alpine from 'alpinejs';
 import Quill from 'quill';
-import 'quill/dist/quill.snow.css'; 
+import 'quill/dist/quill.snow.css';
 import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.default.css';
 
@@ -24,17 +25,17 @@ function transformUrl(url) {
     // =======================================================
     // Cek apakah ini link /share/ atau /watch/ atau /videos/
     if (url.includes('facebook.com')) {
-        
-        // Kita tidak perlu mengubah link 'share' atau 'watch'. 
-        // Plugin Facebook (video.php) cukup pintar untuk 
+
+        // Kita tidak perlu mengubah link 'share' atau 'watch'.
+        // Plugin Facebook (video.php) cukup pintar untuk
         // menanganinya JIKA kita memberinya URL yang bersih.
-        
+
         // 1. Bersihkan parameter (cth: ?mibextid=...)
-        const cleanUrl = url.split('?')[0]; 
-        
+        const cleanUrl = url.split('?')[0];
+
         // 2. Gunakan URL yang sudah bersih itu untuk 'href'
         embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(cleanUrl)}&show_text=false&width=560`;
-    } 
+    }
     // =======================================================
 
     else if (url.includes('tiktok.com')) {
@@ -59,7 +60,7 @@ function transformUrl(url) {
         const match = url.match(/vimeo\.com\/(\d+)/);
         if(match) embedUrl = `https://player.vimeo.com/video/${match[1]}`;
     }
-    
+
     return embedUrl;
 }
 
@@ -69,7 +70,7 @@ class CustomVideo extends Video {
     static create(value) {
         // Panggil 'create' bawaan untuk membuat <iframe>
         const node = super.create();
-        
+
         let url = value;
         // Cek keamanan URL
         try {
@@ -89,7 +90,7 @@ class CustomVideo extends Video {
         node.setAttribute('src', embedUrl);
         node.setAttribute('frameborder', '0');
         node.setAttribute('allowfullscreen', true);
-        
+
         return node;
     }
 
@@ -107,10 +108,10 @@ Quill.register(CustomVideo, true);
 // =======================================================
 
 document.addEventListener('alpine:initializing', () => {
-    
+
     Alpine.data('quillEditor', ({ name, value }) => ({
         editor: null,
-        content: value, 
+        content: value,
         init() {
             if (this.$refs.editor.quill) return; // Penjaga (Sudah Benar)
 
@@ -134,7 +135,7 @@ document.addEventListener('alpine:initializing', () => {
     Alpine.data('darkModeToggle', () => ({
         // Baca status awal dari tag <html>
         isDark: document.documentElement.classList.contains('dark'),
-        
+
         toggle() {
             this.isDark = !this.isDark;
             if (this.isDark) {
@@ -155,22 +156,22 @@ document.addEventListener('alpine:initializing', () => {
                 console.warn('TomSelect ref tidak ditemukan.');
                 return;
             }
-            
+
             // Penjaga "Already Initialized"
-            if (this.$refs.tomselect.tomselect) { 
-                return; 
+            if (this.$refs.tomselect.tomselect) {
+                return;
             }
 
             const initialTags = config.initialTags || [];
 
             // PERBAIKAN: Ganti 'this.$el' dengan 'this.$refs.tomselect'
             this.tom = new TomSelect(this.$refs.tomselect, {
-                plugins: ['remove_button'], 
+                plugins: ['remove_button'],
                 valueField: 'id',
                 labelField: 'name',
                 searchField: 'name',
                 options: initialTags,
-                create: false, 
+                create: false,
                 load(query, callback) {
                     const url = `/admin/tags/search?q=${encodeURIComponent(query)}`;
                     fetch(url)
@@ -184,6 +185,10 @@ document.addEventListener('alpine:initializing', () => {
             if (this.tom) this.tom.destroy();
         }
     }));
+
+
+
+
 });
 
 // Jalankan Alpine

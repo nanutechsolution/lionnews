@@ -46,9 +46,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'editor@lionnews.com',
         ]);
 
-        // ----- 5. Buat 10 Akun Jurnalis Kosong -----
-        $journalists = User::factory(10)->create();
-
         // ----- 6. Buat Kategori Profesional LionNews -----
         $categoryData = [
             ['name' => 'Nasional', 'description' => 'Berita politik, kebijakan pemerintah, dan isu nasional.', 'is_featured' => 1, 'nav_order' => 1],
