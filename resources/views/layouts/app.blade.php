@@ -14,6 +14,8 @@
     <link rel="icon" type="image/svg+xml" href="/images/icons/favicon.svg">
     <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
 
+
+
     <title>{{ config('app.name', 'LionNews') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
