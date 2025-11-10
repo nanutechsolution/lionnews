@@ -75,12 +75,13 @@
                             @endif
                         </div>
                         @endforeach
-
+                        @if($hasOtherCategories)
                         <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent
                   border-b-2 border-transparent
                   hover:text-white font-heading">
-                            Lainnya »
+                            Kategori lain »
                         </a>
+                        @endif
                     </div>
                 </div>
 

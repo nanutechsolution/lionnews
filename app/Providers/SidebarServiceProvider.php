@@ -60,15 +60,57 @@ class SidebarServiceProvider extends ServiceProvider
             // Kita cache query ini agar tidak membebani database setiap load
             $navigationCategories = Cache::remember('navigation_categories', now()->addHour(), function () {
                 return Category::query()
-                    ->where('is_featured', true)    
-                    ->whereNull('parent_id')     
+                    ->where('is_featured', true)
+                    ->whereNull('parent_id')
+                    ->where(function ($query) {
+                        // Cek 1: Apakah Kategori Induk ini (cth: Nasional)
+                        // punya artikel publish?
+                        $query->whereHas('articles', function ($subQuery) {
+                            $subQuery->where('status', Article::STATUS_PUBLISHED);
+                        })
+                            // ATAU Cek 2: Apakah ANAK-ANAK-nya (cth: Politik)
+                            // punya artikel publish?
+                            ->orWhereHas('children.articles', function ($subQuery) {
+                            $subQuery->where('status', Article::STATUS_PUBLISHED);
+                        });
+                    })
+                    ->with([
+                        'children' => function ($childQuery) {
+                            $childQuery->whereHas('articles', function ($subQuery) {
+                                $subQuery->where('status', Article::STATUS_PUBLISHED);
+                            })
+                                ->orderBy('name', 'asc');
+                        }
+                    ])
+
+
                     ->orderBy('nav_order', 'asc')
-                    ->with('children')          
                     ->get();
             });
 
+            // =======================================================
+            // 2. TAMBAHKAN QUERY INI: Cek "Kategori Lain"
+            // =======================================================
+            $hasOtherCategories = Cache::remember('has_other_categories', now()->addMinutes(30), function () use ($navigationCategories) {
+
+                // Ambil ID dari semua kategori yang SUDAH TAMPIL di navigasi
+                $featuredIds = $navigationCategories->pluck('id');
+
+                // Cek apakah ada kategori lain yang:
+                return Category::query()
+                    ->where('is_featured', false) // 1. BUKAN kategori 'featured'
+                    ->whereNotIn('id', $featuredIds) // 2. TIDAK ada di navigasi utama
+                    ->whereHas('articles', function ($subQuery) { // 3. DAN punya artikel
+                        $subQuery->where('status', Article::STATUS_PUBLISHED);
+                    })
+                    ->exists(); // 4. Cukup cek 'exists' (true/false), sangat cepat.
+            });
+
             // Kirim variabel $navigationCategories ke 'layouts.public'
-            $view->with('navigationCategories', $navigationCategories);
+            $view->with([
+                'navigationCategories' => $navigationCategories,
+                'hasOtherCategories' => $hasOtherCategories
+            ]);
         });
     }
 }

@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicController;
-use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
@@ -47,9 +46,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/author/{user}', [PublicController::class, 'authorShow'])->name('author.show');
 Route::get('/tag/{tag:slug}', [PublicController::class, 'tagShow'])->name('tag.show');
 require __DIR__ . '/auth.php';
-
+Route::get('/category/{category:slug}', [PublicController::class, 'categoryShow'])->name('category.show');
+Route::get('/read/{category:slug}/{article:slug}', [PublicController::class, 'articleShow'])->name('article.show');
 Route::get('/{page:slug}', [PublicController::class, 'pageShow'])
     ->name('page.show');
-Route::get('/{category:slug}', [PublicController::class, 'categoryShow'])->name('category.show');
-Route::get('/{category:slug}/{article:slug}', [PublicController::class, 'articleShow'])->name('article.show');
 

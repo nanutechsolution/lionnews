@@ -26,7 +26,7 @@
     </div>
 
     <div class="mt-8 sm:px-6 lg:px-0">
-        {{ $articles->links('pagination::tailwind') }}
+        {{ $articles->links() }}
     </div>
 
 </x-public-layout>

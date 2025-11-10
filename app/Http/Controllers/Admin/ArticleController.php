@@ -66,7 +66,6 @@ class ArticleController extends Controller
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // maks 2MB
             'status' => [ // Validasi status
                 'nullable', // Boleh null jika jurnalis
-                // Pastikan nilainya salah satu dari konstanta kita
                 Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
             ]
         ]);
@@ -96,10 +95,10 @@ class ArticleController extends Controller
             'excerpt' => $validatedData['excerpt'],
             'body' => $validatedData['body'],
             'featured_image_path' => $imagePath,
-            'user_id' => Auth::id(), // Ambil ID user yang sedang login
-            'slug' => Str::slug($validatedData['title']), // Buat slug otomatis
+            'user_id' => Auth::id(),
+            'slug' => Str::slug($validatedData['title']),
             'status' => $status, // <-- Gunakan status dinamis
-            'published_at' => $published_at, // <-- Gunakan waktu terbit dinamis
+            'published_at' => $published_at,
         ]);
         if ($request->hasFile('featured_image')) {
             $article
@@ -124,7 +123,7 @@ class ArticleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Article $article) // <-- Route Model Binding
+    public function edit(Article $article)
     {
         // Cek Otorisasi (Contoh: Jurnalis hanya boleh edit artikelnya sendiri)
         // $this->authorize('update', $article); // Kita akan buat Policy ini nanti
@@ -135,7 +134,7 @@ class ArticleController extends Controller
         return view('admin.articles.edit', [
             'article' => $article,
             'categories' => $categories,
-            'tags' => $tags // <-- KIRIM KE VIEW
+            'tags' => $tags
         ]);
     }
 

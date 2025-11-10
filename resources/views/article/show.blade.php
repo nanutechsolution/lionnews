@@ -26,25 +26,50 @@
             Diterbitkan pada {{ $article->published_at->format('d F Y, H:i') }}
         </div>
 
-        <div class="mt-6 flex items-center gap-3">
-            <span class=" text-gray-500 dark:text-gray-400 text-xs uppercase tracking-widest">Bagikan:</span>
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition" title="Bagikan ke Facebook">
-                <x-lucide-facebook class="w-5 h-5" />
-            </a>
+      <div class="mt-6 flex items-center gap-3">
+    <span class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-widest">Bagikan:</span>
 
-            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}" target="_blank" class="p-2 bg-gray-900 text-white rounded-full hover:bg-gray-700 transition" title="Bagikan ke X (Twitter)">
-                <x-lucide-twitter class="w-5 h-5" />
-            </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+       target="_blank" class="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+       title="Bagikan ke Facebook">
+        <x-lucide-facebook class="w-5 h-5" />
+    </a>
 
-            <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}" target="_blank" class="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition" title="Bagikan ke WhatsApp">
-                <x-lucide-message-circle class="w-5 h-5" />
-            </a>
+    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($article->title) }}"
+       target="_blank" class="p-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full hover:bg-gray-700 dark:hover:bg-gray-200 transition"
+       title="Bagikan ke X (Twitter)">
+        <x-lucide-twitter class="w-5 h-5" />
+    </a>
 
-            <a href="mailto:?subject={{ urlencode($article->title) }}&body={{ urlencode(request()->url()) }}" class="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition" title="Kirim lewat Email">
-                <x-lucide-mail class="w-5 h-5" />
-            </a>
-        </div>
+    <a href="https://api.whatsapp.com/send?text={{ urlencode($article->title . ' - ' . request()->url()) }}"
+       target="_blank" class="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition"
+       title="Bagikan ke WhatsApp">
+        <x-lucide-message-circle class="w-5 h-5" />
+    </a>
 
+
+
+    <div x-data="{ copied: false }">
+        <button
+            type="button"
+            class="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition"
+
+            x-on:click="navigator.clipboard.writeText(@js(request()->url()));
+                          copied = true;
+                          setTimeout(() => copied = false, 2000)"
+
+            x-bind:title="copied ? 'Link disalin!' : 'Salin link'">
+
+            <span x-show="!copied">
+                <x-lucide-copy class="w-5 h-5" />
+            </span>
+
+            <span x-show="copied" style="display: none;">
+                <x-lucide-check class="w-5 h-5 text-green-400" />
+            </span>
+        </button>
+    </div>
+    </div>
         @if($article->hasMedia('featured'))
         <figure class="mt-8">
             <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') }}" alt="{{ $article->title }}">

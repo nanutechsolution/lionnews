@@ -20,24 +20,20 @@ class PublicController extends Controller
     /**
      * Menampilkan halaman Home (Beranda).
      */
-
     public function home()
     {
         // 1. Atur SEO (Sudah ada)
         SEOMeta::setTitle('Portal Berita Terkini dan Terpercaya');
-
         // 2. Ambil 15 artikel TERBARU (untuk 3 blok layout)
         $latestArticles = Article::with('user', 'category')
             ->where('status', 'published')
             ->latest('published_at')
             ->take(15) // 1 (Hero) + 4 (Slider) + 10 (Daftar)
             ->get();
-
         // 3. Bagi artikel TERBARU
         $heroArticle = $latestArticles->shift(); // Ambil 1 artikel pertama untuk Hero
         $topGridArticles = $latestArticles->splice(0, 4); // Ambil 4 berikutnya untuk Slider
         $latestListArticles = $latestArticles; // Sisanya (10) untuk Daftar Umpan
-
         // 4. Ambil 5 artikel TERPOPULER (untuk blok trending teks)
         $popularArticles = Article::orderByUniqueViews('desc', Period::pastDays(7))
             ->where('status', 'published')
@@ -52,8 +48,6 @@ class PublicController extends Controller
             'latestListArticles' => $latestListArticles,
         ]);
     }
-
-
     /**
      * Menampilkan satu halaman artikel penuh.
      * * Berkat Route Model Binding, Laravel otomatis
@@ -218,9 +212,22 @@ class PublicController extends Controller
     public function allCategories()
     {
         SEOMeta::setTitle('Semua Kategori Berita');
+        $allCategories = Category::query()
+            // Filter: Hanya tampilkan kategori yang...
+            ->where(function ($query) {
+                // 1. Memiliki artikel (yang sudah publish)
+                $query->whereHas('articles', function ($subQuery) {
+                    $subQuery->where('status', Article::STATUS_PUBLISHED);
+                })
+                    // 2. ATAU anak-anaknya memiliki artikel (jika ini Kategori Induk)
+                    ->orWhereHas('children.articles', function ($subQuery) {
+                    $subQuery->where('status', Article::STATUS_PUBLISHED);
+                });
+            })
+            ->orderBy('name', 'asc')
+            ->get();
 
-        // Ambil SEMUA kategori, urutkan berdasarkan nama
-        $allCategories = Category::orderBy('name', 'asc')->get();
+        // Tampilan 'category.index-all' Anda tidak perlu diubah
         return view('category.index-all', [
             'categories' => $allCategories
         ]);
