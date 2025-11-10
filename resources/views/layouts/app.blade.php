@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#1E3A8A">
-    <link rel="apple-touch-icon" href="{{ asset('logos/web-app-manifest-192x192.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.webmanifest">
+
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/icons/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="/images/icons/favicon.svg">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+
     <title>{{ config('app.name', 'LionNews') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
