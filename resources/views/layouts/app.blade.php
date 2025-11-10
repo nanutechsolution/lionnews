@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="/manifest.webmanifest">
 
-
     <!-- Icons -->
     <link rel="icon" type="image/png" sizes="96x96" href="/images/icons/favicon-96x96.png">
     <link rel="icon" type="image/svg+xml" href="/images/icons/favicon.svg">
