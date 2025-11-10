@@ -12,6 +12,10 @@ class Tag extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $casts = [
+        'published_at' => 'datetime',
+        'suggested_tags' => 'array',
+    ];
 
     /**
      * Mendapatkan semua artikel yang memiliki tag ini.

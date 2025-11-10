@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Article;
+use App\Models\Page;  // <-- 1. IMPORT MODEL PAGE
 use App\Models\Tag;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,9 @@ use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Seed the application's database for production or fresh install.
+     */
     public function run(): void
     {
         // 1. Nonaktifkan cek foreign key
@@ -22,7 +26,9 @@ class DatabaseSeeder extends Seeder
         DB::table('article_tag')->truncate();
         DB::table('media')->truncate();
         DB::table('views')->truncate();
-        Article::truncate();
+        DB::table('comments')->truncate(); // <-- Hapus komentar
+        Article::truncate();               // <-- Hapus artikel
+        Page::truncate();                  // <-- Hapus halaman
         Category::truncate();
         Tag::truncate();
         User::truncate();
@@ -40,14 +46,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'editor@lionnews.com',
         ]);
 
-        // ----- 5. Buat Jurnalis Lain -----
+        // ----- 5. Buat 10 Akun Jurnalis Kosong -----
         $journalists = User::factory(10)->create();
 
-        // ----- 6. Buat Kategori LionNews -----
+        // ----- 6. Buat Kategori Profesional LionNews -----
         $categoryData = [
             ['name' => 'Nasional', 'description' => 'Berita politik, kebijakan pemerintah, dan isu nasional.', 'is_featured' => 1, 'nav_order' => 1],
             ['name' => 'Ekonomi', 'description' => 'Bisnis, pasar, investasi, UMKM, dan ekonomi lokal/nasional.', 'is_featured' => 1, 'nav_order' => 2],
-            ['name' => 'Sumba', 'description' => 'Berita khusus Sumba, budaya, pariwisata, dan sosial lokal.', 'is_featured' => 0, 'nav_order' => 3],
+            ['name' => 'Sumba', 'description' => 'Berita khusus Sumba, budaya, pariwisata, dan sosial lokal.', 'is_featured' => 1, 'nav_order' => 3, 'parent_id' => null], // <-- Kategori Induk Sumba
             ['name' => 'Budaya & Tradisi', 'description' => 'Adat, seni, festival, dan budaya lokal.', 'is_featured' => 0, 'nav_order' => 4],
             ['name' => 'Pariwisata & Travel', 'description' => 'Destinasi wisata, tips traveling, dan atraksi lokal.', 'is_featured' => 0, 'nav_order' => 5],
             ['name' => 'Kriminal & Hukum', 'description' => 'Kasus hukum, kriminalitas, dan berita kepolisian.', 'is_featured' => 0, 'nav_order' => 6],
@@ -67,69 +73,78 @@ class DatabaseSeeder extends Seeder
                 'description' => $cat['description'],
                 'is_featured' => $cat['is_featured'],
                 'nav_order' => $cat['nav_order'],
+                'parent_id' => $cat['parent_id'] ?? null, // Tambahkan parent_id
             ]);
             $categories->put($cat['name'], $category);
         }
 
-        // ----- 7. Buat Tag Dummy -----
-        $tags = Tag::factory(15)->create();
+        // Buat Sub-kategori Sumba
+        $sumbaCategory = $categories->get('Sumba');
+        if ($sumbaCategory) {
+            $subCategories = ['Sumba Barat', 'Sumba Barat Daya', 'Sumba Tengah', 'Sumba Timur'];
+            foreach ($subCategories as $subName) {
+                Category::create([
+                    'name' => $subName,
+                    'slug' => Str::slug($subName),
+                    'description' => 'Berita dari ' . $subName,
+                    'is_featured' => 0, // Tidak tampil di nav utama
+                    'parent_id' => $sumbaCategory->id, // Set Sumba sebagai Induk
+                ]);
+            }
+        }
 
-        // ----- 8. Buat Artikel Dummy -----
-        Article::factory(30)->create([
-            'user_id' => $journalists->random()->id,
-            'category_id' => $categories->random()->id,
-        ])->each(function ($article) use ($tags) {
-            $article->tags()->attach($tags->random(rand(1, 3))->pluck('id')->toArray());
-        });
-
-        Article::factory(5)->draft()->create([
-            'user_id' => $journalists->random()->id,
-            'category_id' => $categories->random()->id,
-        ]);
-
-        Article::factory(3)->pending()->create([
-            'user_id' => $journalists->random()->id,
-            'category_id' => $categories->random()->id,
-        ]);
-
-        // ----- 9. Artikel Demo Sumba -----
-        $sumbaTitles = [
-            ['title' => 'Festival Pasola Berdarah: Tradisi vs. Keamanan Modern di Sumba Barat', 'tags' => ['Berita Sumba','Pasola','Sumba Barat','Budaya']],
-            ['title' => 'Kekeringan Melanda Sumba Timur, Petani Terancam Gagal Panen Jagung', 'tags' => ['Berita Sumba','Sumba Timur','Kekeringan']],
-            ['title' => 'Tenun Ikat Sumba Mendunia: Perajin Lokal Tembus Pasar Eropa', 'tags' => ['Ekonomi','Tenun Ikat','Berita Sumba']],
-            ['title' => 'Pembangunan Resor di Sumba Barat Daya Picu Perdebatan Lahan Adat', 'tags' => ['Berita Sumba','Sumba Barat Daya','Pariwisata']],
-            ['title' => 'Jalan Trans-Sumba Rusak Parah di Anakalang, Logistik Terhambat', 'tags' => ['Infrastruktur','Sumba Tengah','Berita Sumba']],
-            ['title' => 'Potensi Ekowisata Danau Weekuri: Surga Tersembunyi SBD Butuh Pengelolaan Serius', 'tags' => ['Pariwisata NTT','Sumba Barat Daya']],
-            ['title' => 'Polres Sumba Barat Tangkap Komplotan Pencuri Ternak yang Resahkan Warga', 'tags' => ['Kriminal','Pencurian Ternak','Sumba Barat']],
-            ['title' => "Proyek 'Sumba Iconic Island' Dievaluasi, Apa Kabar Kedaulatan Energi Terbarukan?", 'tags' => ['Energi Terbarukan','Sumba Iconic Island','NTT']],
-            ['title' => 'Wabah Malaria Kembali Muncul di Sumba Tengah, Dinkes Lakukan Fogging Massal', 'tags' => ['Kesehatan','Malaria','Sumba Tengah']],
-            ['title' => 'Kuda Sandelwood, Ikon Sumba yang Mulai Terlupakan Akibat Modernisasi', 'tags' => ['Budaya','Berita Sumba','Kuda Sandelwood']],
+        // ----- 7. Buat Daftar Tagar (Tags) Awal -----
+        $tagNames = [
+            'Berita Sumba','Pasola','Budaya','Kekeringan','Ekonomi','Tenun Ikat',
+            'UMKM','Pariwisata','Konflik Lahan','Infrastruktur','Pariwisata NTT',
+            'Kriminal','Pencurian Ternak','Energi Terbarukan','Sumba Iconic Island',
+            'NTT','Kesehatan','Malaria','Kuda Sandelwood'
         ];
-
-        $allSumbaTags = collect($sumbaTitles)->flatMap(fn($item) => $item['tags'])->unique();
-        $tagModels = collect();
-        foreach ($allSumbaTags as $tagName) {
-            $tag = Tag::firstOrCreate(
+        foreach ($tagNames as $tagName) {
+            Tag::firstOrCreate(
                 ['slug' => Str::slug($tagName)],
                 ['name' => $tagName]
             );
-            $tagModels->put($tagName, $tag->id);
         }
 
-        foreach ($sumbaTitles as $item) {
-            $categoryId = ($item['tags'][0] == 'Ekonomi') ? $categories->get('Ekonomi')->id : $categories->get('Sumba')->id;
+        // ----- 8. Buat Halaman (Pages) Esensial -----
+        $this->seedPages();
+    }
 
-            $article = Article::factory()->create([
-                'title' => $item['title'],
-                'slug' => Str::slug($item['title']),
-                'user_id' => $admin->id,
-                'category_id' => $categoryId,
-                'status' => Article::STATUS_PUBLISHED,
-                'published_at' => now()->subDays(rand(1, 15)),
-            ]);
+    /**
+     * Helper function untuk membuat Halaman (Pages)
+     */
+    private function seedPages(): void
+    {
+        $pages = [
+            [
+                'title' => 'Tentang Kami',
+                'slug' => 'tentang-kami',
+                'body' => '<p><strong>LionNews</strong> adalah portal berita independen yang lahir di jantung Nusa Tenggara Timur, dengan visi untuk menjadi "Raja Hutan" informasi yang berwibawa di kancah digital.</p><p>Kami percaya pada jurnalisme yang didasari oleh dua pilar utama, seperti yang tercermin pada warna kami:</p><ul><li><strong>Biru (Deep Blue):</strong> Melambangkan <strong>Kepercayaan (Trust)</strong>, stabilitas, dan kredibilitas. Berita kami disajikan secara mendalam, akurat, dan dapat dipertanggungjawabkan.</li><li><strong>Emas (Gold):</strong> Melambangkan <strong>Prestise (Prestige)</strong> dan kekuasaan. Kami tidak hanya melaporkan, tapi menyajikan analisis kritis yang berkelas dan berdampak.</li></ul><p>Di era banjir informasi, LionNews hadir sebagai filter Anda—menyajikan berita yang penting, berani, dan elegan.</p>',
+                'is_published' => true
+            ],
+            [
+                'title' => 'Tim Redaksi',
+                'slug' => 'redaksi',
+                'body' => '<h2>Dewan Redaksi</h2><p>Penanggung Jawab / Pemimpin Redaksi:</p><p><strong>[Nama Anda Di Sini]</strong></p><p>Wakil Pemimpin Redaksi:</p><p><strong>[Nama Editor Senior]</strong></p><br><h2>Tim Liputan</h2><p>Editor Pelaksana:</p><p><strong>[Nama Editor 1]</strong></p><p><strong>[Nama Editor 2]</strong></p><br><p>Jurnalis Senior:</p><p><strong>[Nama Jurnalis 1]</strong></p><p><strong>[Nama Jurnalis 2]</strong></p><br><h2>Kontak Redaksi</h2><p>Email: redaksi@lionnews.test</p><p>Alamat: [Alamat Kantor Anda]</p>',
+                'is_published' => true
+            ],
+            [
+                'title' => 'Pedoman Media Siber',
+                'slug' => 'pedoman-media-siber',
+                'body' => '<p>Kemerdekaan berpendapat, kemerdekaan berekspresi, dan kemerdekaan pers adalah hak asasi manusia yang dilindungi Pancasila, Undang-Undang Dasar 1945, dan Deklarasi Universal Hak Asasi Manusia PBB...</p><h2>1. Ruang Lingkup</h2><p>a. Media Siber adalah segala bentuk media yang menggunakan wahana internet dan melaksanakan kegiatan jurnalistik...</p><p><em>(Silakan salin-tempel teks lengkap dari situs Dewan Pers)</em></p>',
+                'is_published' => true
+            ],
+             [
+                'title' => 'Kontak Kami',
+                'slug' => 'kontak-kami',
+                'body' => '<h2>Kontak Redaksi & Iklan</h2><p>Untuk kerja sama liputan, undangan pers, atau pemasangan iklan, silakan hubungi kami di:</p><p>Email: <strong>redaksi@lionnews.test</strong></p><p>Telepon: <strong>[Nomor Telepon Anda]</strong></p><p>Alamat: <strong>[Alamat Kantor Anda]</strong></p>',
+                'is_published' => true
+            ]
+        ];
 
-            $tagIdsToAttach = collect($item['tags'])->map(fn($tagName) => $tagModels->get($tagName));
-            $article->tags()->sync($tagIdsToAttach);
+        foreach ($pages as $page) {
+            Page::create($page);
         }
     }
 }

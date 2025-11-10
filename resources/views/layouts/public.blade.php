@@ -43,8 +43,8 @@
 
                         @foreach($navigationCategories as $category)
                         <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                            <a href="{{ route('category.show', $category->slug) }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 border-b-2 border-transparent 
-                          hover:text-white hover:border-brand-accent 
+                            <a href="{{ route('category.show', $category->slug) }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 border-b-2 border-transparent
+                          hover:text-white hover:border-brand-accent
                           font-heading flex items-center">
                                 {{ $category->name }}
 
@@ -76,8 +76,8 @@
                         </div>
                         @endforeach
 
-                        <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent 
-                  border-b-2 border-transparent 
+                        <a href="{{ route('categories.index.all') }}" class="px-3 py-2 rounded-md text-sm font-medium text-brand-accent
+                  border-b-2 border-transparent
                   hover:text-white font-heading">
                             Lainnya »
                         </a>
@@ -98,7 +98,7 @@
 
 
                     <form action="{{ route('search') }}" method="GET" class="ml-4">
-                        <input type="text" name="q" placeholder="Cari berita..." class="px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm 
+                        <input type="text" name="q" placeholder="Cari berita..." class="px-3 py-2 bg-white/10 border border-transparent text-white rounded-md text-sm
                                       focus:bg-white focus:text-gray-900 transition" value="{{ request('q') }}">
                     </form>
 
@@ -142,9 +142,9 @@
                 @if($category->children->count() > 0)
 
                 <div x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full flex justify-between items-center pl-3 pr-4 py-2 border-l-4 border-transparent 
-                                   text-base font-medium text-gray-200 
-                                   hover:text-white hover:bg-white/10 hover:border-brand-accent 
+                    <button @click="open = !open" class="w-full flex justify-between items-center pl-3 pr-4 py-2 border-l-4 border-transparent
+                                   text-base font-medium text-gray-200
+                                   hover:text-white hover:bg-white/10 hover:border-brand-accent
                                    font-heading">
                         <span>{{ $category->name }}</span>
                         <svg class="h-5 w-5 transform transition-transform duration-150" :class="{'rotate-90': open}" fill="currentColor" viewBox="0 0 20 20">
@@ -154,7 +154,7 @@
 
                     <div x-show="open" x-transition class="mt-1 space-y-1 pl-8">
                         @foreach($category->children as $subCategory)
-                        <a href="{{ route('category.show', $subCategory->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm font-medium 
+                        <a href="{{ route('category.show', $subCategory->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-sm font-medium
                                       text-gray-400 hover:text-white hover:bg-white/10">
                             {{ $subCategory->name }}
                         </a>
@@ -163,8 +163,8 @@
                 </div>
 
                 @else
-                <a href="{{ route('category.show', $category->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium 
-                          text-gray-200 hover:text-white hover:bg-white/10 
+                <a href="{{ route('category.show', $category->slug) }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium
+                          text-gray-200 hover:text-white hover:bg-white/10
                           hover:border-brand-accent font-heading">
                     {{ $category->name }}
                 </a>
@@ -172,8 +172,8 @@
 
                 @endforeach
 
-                <a href="{{ route('categories.index.all') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium 
-                  text-brand-accent hover:text-white hover:bg-white/10 
+                <a href="{{ route('categories.index.all') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium
+                  text-brand-accent hover:text-white hover:bg-white/10
                   hover:border-brand-accent font-heading">
                     Lainnya »
                 </a>
@@ -232,10 +232,43 @@
         </div>
     </main>
     <footer class="bg-brand-primary text-gray-300 mt-12">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-sm">
-                &copy; {{ date('Y') }} LionNews. All rights reserved.
-            </p>
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+                <div class="md:col-span-2">
+                    <a href="{{ route('home') }}" class="text-3xl font-extrabold text-brand-accent hover:text-white transition duration-150">
+                        LionNews
+                    </a>
+                    <p class="mt-4 text-sm text-gray-400">
+                        Menyajikan berita terkini, mendalam, dan terpercaya. Berani, kritis, dan berkelas.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold uppercase text-gray-200 tracking-wider font-heading">Perusahaan</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="{{ url('tentang-kami') }}" class="text-base text-gray-300 hover:text-white">Tentang Kami</a></li>
+                        <li><a href="{{ url('redaksi') }}" class="text-base text-gray-300 hover:text-white">Tim Redaksi</a></li>
+                        <li><a href="{{ url('pedoman-media-siber') }}" class="text-base text-gray-300 hover:text-white">Pedoman Media Siber</a></li>
+                        <li><a href="{{ url('kontak-kami') }}" class="text-base text-gray-300 hover:text-white">Kontak</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold uppercase text-gray-200 tracking-wider font-heading">Legalitas</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="{{ url('privacy-policy') }}" class="text-base text-gray-300 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="{{ url('terms-of-service') }}" class="text-base text-gray-300 hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-blue-900 text-center">
+                <p class="text-sm text-gray-400">
+                    &copy; {{ date('Y') }} LionNews. All rights reserved.
+                </p>
+            </div>
         </div>
     </footer>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Page;
 use App\Models\Tag;
 use App\Models\User;
 use Artesaos\SEOTools\Facades\JsonLd;
@@ -12,6 +13,7 @@ use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\TwitterCard;
 use CyrildeWit\EloquentViewable\Support\Period;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PublicController extends Controller
 {
@@ -222,5 +224,20 @@ class PublicController extends Controller
         return view('category.index-all', [
             'categories' => $allCategories
         ]);
+    }
+
+    public function pageShow(Page $page)
+    {
+        // Cek jika halaman sudah di-publish
+        if (!$page->is_published) {
+            abort(404);
+        }
+
+        // Atur SEO
+        SEOMeta::setTitle($page->title);
+        SEOMeta::setDescription(Str::limit(strip_tags($page->body), 155));
+
+        // Gunakan satu view 'show' generik
+        return view('pages.show', compact('page'));
     }
 }

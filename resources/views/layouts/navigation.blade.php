@@ -31,19 +31,23 @@
                     <a href="{{ route('admin.tags.index') }}" class="{{ $linkClasses }} {{ request()->routeIs('admin.tags.*') ? $activeClasses : $inactiveClasses }}">
                         {{ __('Tag') }}
                     </a>
+                    <a href="{{ route('admin.pages.index') }}" class="{{ $linkClasses }} {{ request()->routeIs('admin.pages.*') ? $activeClasses : $inactiveClasses }}">
+                        {{ __('Halaman') }}
+                    </a>
                     @can('manage-users')
                     <a href="{{ route('admin.users.index') }}" class="{{ $linkClasses }} {{ request()->routeIs('admin.users.*') ? $activeClasses : $inactiveClasses }}">
                         {{ __('Pengguna') }}
                     </a>
+
                     @endcan
                 </div>
                 @endcan
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6" x-data="darkModeToggle()">
-                <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium 
-              rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 
-              hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none 
+                <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium
+              rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800
+              hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none
               transition ease-in-out duration-150">
                     Kunjungi Situs
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-2">
@@ -117,6 +121,9 @@
             </a>
             <a href="{{ route('admin.tags.index') }}" class="{{ $respLinkClasses }} {{ request()->routeIs('admin.tags.*') ? $respActiveClasses : $respInactiveClasses }}">
                 {{ __('Tag') }}
+            </a>
+            <a href="{{ route('admin.pages.index') }}" class="{{ $respLinkClasses }} {{ request()->routeIs('admin.pages.*') ? $respActiveClasses : $respInactiveClasses }}">
+                {{ __('Halaman') }}
             </a>
             @endcan
             @can('manage-users')

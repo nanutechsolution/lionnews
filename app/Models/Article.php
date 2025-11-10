@@ -114,7 +114,6 @@ class Article extends Model implements HasMedia, Viewable
     protected function processedBody(): Attribute
     {
         return Attribute::make(
-            // Fungsi 'get' ini akan berjalan setiap kali Anda memanggil $article->processed_body
             get: fn ($value, $attributes) => $this->embedVideos($attributes['body']),
         );
     }
@@ -138,7 +137,7 @@ class Article extends Model implements HasMedia, Viewable
         // Daftar pola Regex untuk setiap platform
         // Kita menargetkan link yang berada di paragrafnya sendiri
         $patterns = [
-            
+
             // Pola 1: YouTube (Long & Short)
             '~<p>(?:<a[^>]*>)?(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11}))[^<]*?(?:<\/a>)?<\/p>~' => function ($matches) use ($wrapperStart, $wrapperEnd) {
                 // $matches[2] adalah ID video. Kita amankan dari XSS.
