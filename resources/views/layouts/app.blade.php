@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <meta name="theme-color" content="#1E3A8A">
+    <link rel="apple-touch-icon" href="{{ asset('logos/web-app-manifest-192x192.png') }}">
     <title>{{ config('app.name', 'LionNews') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -42,10 +43,7 @@
         </main>
     </div>
 
-  <div x-data="mediaLibrary()" x-show="isOpen" @keydown.escape.window="isOpen = false"
-
-     x-on:open-media-library.window="open($event.detail)"
-     class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
+    <div x-data="mediaLibrary()" x-show="isOpen" @keydown.escape.window="isOpen = false" x-on:open-media-library.window="open($event.detail)" class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
         <div x-show="isOpen" x-transition.opacity.duration.300ms class="absolute inset-0 bg-gray-900/75"></div>
 
         <div x-show="isOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full h-[90vh] flex flex-col">
