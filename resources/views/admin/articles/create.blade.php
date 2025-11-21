@@ -43,10 +43,11 @@
                         </div>
 
                         <div class="mt-4">
-                            <label for="body" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Isi Artikel') }}</label>
-                            <x-quill-editor name="body" :value="old('body')" class="mt-1" />
-                            <x-input-error :messages="$errors->get('body')" class="mt-2" />
-                        </div>
+    <label for="body" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Isi Artikel') }}</label>
+    <x-quill-editor name="body" :value="old('body')" class="mt-1" />
+    <x-input-error :messages="$errors->get('body')" class="mt-2" />
+</div>
+
 
                         <div class="mt-4">
                             <label for="featured_image" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Gambar Utama') }}</label>
@@ -56,7 +57,7 @@
                                           file:bg-brand-primary/10 file:text-brand-primary
                                           dark:file:bg-brand-primary/20 dark:file:text-brand-accent
                                           hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30" onchange="previewImage(event)">
-
+<x-input-error :messages="$errors->get('featured_image')" class="mt-2 text-red-500" />
                             <div class="mt-2">
                                 <img id="imagePreview" src="#" alt="Preview Gambar" class="hidden max-h-64 rounded-md border border-gray-300 dark:border-gray-600" />
                             </div>
@@ -81,6 +82,28 @@
                             </select>
                         </div>
                         @endcan
+                        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Pin to Hero -->
+    <label class="flex items-center gap-3 cursor-pointer">
+        <input type="checkbox" name="is_hero_pinned" value="1"
+            class="h-5 w-5 text-blue-600 border-gray-300 rounded"
+            {{ old('is_hero_pinned') ? 'checked' : '' }}>
+        <span class="text-gray-700 dark:text-gray-300 font-medium">
+            Tampilkan di Hero Section
+        </span>
+    </label>
+
+    <!-- Editor's Pick -->
+    <label class="flex items-center gap-3 cursor-pointer">
+        <input type="checkbox" name="is_editors_pick" value="1"
+            class="h-5 w-5 text-blue-600 border-gray-300 rounded"
+            {{ old('is_editors_pick') ? 'checked' : '' }}>
+        <span class="text-gray-700 dark:text-gray-300 font-medium">
+            Pilihan Editor
+        </span>
+    </label>
+</div>
+
 
                         <div class="flex items-center justify-end mt-4">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-brand-primary border border-transparent 
@@ -96,6 +119,17 @@
                             </button>
                         </div>
                     </form>
+@if($errors->any())
+    <script>
+        document.addEventListener('alpine:init', () => {
+            @foreach($errors->all() as $error)
+                window.dispatchEvent(new CustomEvent('toast', {
+                    detail: "{{ $error }}"
+                }));
+            @endforeach
+        });
+    </script>
+@endif
 
                 </div>
             </div>
@@ -112,12 +146,12 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
-                    preview.classList.remove('hidden'); // Tampilkan preview
+                    preview.classList.remove('hidden'); 
                 }
                 reader.readAsDataURL(input.files[0]);
             } else {
                 preview.src = '#';
-                preview.classList.add('hidden'); // Sembunyikan jika tidak ada file
+                preview.classList.add('hidden');
             }
         }
 

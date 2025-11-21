@@ -111,22 +111,25 @@ document.addEventListener('alpine:initializing', () => {
 
     Alpine.data('quillEditor', ({ name, value }) => ({
         editor: null,
-        content: value,
+        content: value ?? '',
         init() {
-            if (this.$refs.editor.quill) return; // Penjaga (Sudah Benar)
 
             this.editor = new Quill(this.$refs.editor, {
                 theme: 'snow',
                 modules: {
                     toolbar: [
-                        [{ 'header': [2, 3, false] }],
+                        [{ header: [2, 3, false] }],
                         ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, 'blockquote'],
-                        ['video'] // <-- Tombol ini sekarang menggunakan logic kustom kita!
+                        [{ list: 'ordered'}, { list: 'bullet' }, 'blockquote'],
+                        ['video']
                     ]
                 }
             });
+
+            // Load previous value
             this.editor.root.innerHTML = this.content;
+
+            // Update data ke hidden input
             this.editor.on('text-change', () => {
                 this.content = this.editor.root.innerHTML;
             });

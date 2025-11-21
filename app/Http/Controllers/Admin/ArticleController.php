@@ -64,14 +64,23 @@ class ArticleController extends Controller
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required|string',
             'body' => 'required|string',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // maks 2MB
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048', // maks 2MB
             'status' => [ // Validasi status
                 'nullable', // Boleh null jika jurnalis
                 Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
             ],
             'is_hero_pinned' => 'nullable|boolean',
             'is_editors_pick' => 'nullable|boolean',
-        ]);
+        ], [
+        'featured_image.max'   => 'Ukuran gambar terlalu besar. Maksimal 4MB.',
+        'featured_image.image' => 'File yang diunggah harus berupa gambar.',
+        'featured_image.mimes' => 'Format gambar harus JPG atau PNG.',
+
+        'title.required'  => 'Judul wajib diisi.',
+        'category_id.required' => 'Kategori belum dipilih.',
+        'body.required' => 'Isi artikel tidak boleh kosong.',
+    ]);
+        // dd($validatedData);
 
         $status = Article::STATUS_DRAFT;
         $published_at = null;
@@ -105,15 +114,9 @@ class ArticleController extends Controller
             'is_hero_pinned' => $request->has('is_hero_pinned'),
             'is_editors_pick' => $request->has('is_editors_pick'),
         ]);
-        // if ($request->hasFile('featured_image')) {
-        //     $article
-        //         ->addMediaFromRequest('featured_image') // Ambil file
-        //         ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
-        //         ->toMediaCollection('featured'); // Simpan ke koleksi 'featured'
-        // }
         if ($request->hasFile('featured_image')) {
             // Upload gambar baru
-            $article->clearMediaCollection('featured_image'); // Hapus yang lama
+            $article->clearMediaCollection('featured_image');
             $article->addMediaFromRequest('featured_image')->toMediaCollection('featured_image');
         } elseif ($request->filled('selected_media_id')) {
             // Gunakan gambar dari pustaka yang sudah ada
@@ -123,14 +126,10 @@ class ArticleController extends Controller
                 $media->copy($article, 'featured_image'); // Salin media ke artikel ini
             }
         } else {
-            // Jika tidak ada upload dan tidak ada pilihan dari pustaka,
-            // dan artikel sebelumnya punya gambar, biarkan saja.
-            // Jika tidak ada keduanya, pastikan tidak ada gambar (atau bisa diatur default)
         }
         $article->tags()->sync($request->input('tags', []));
-        // 4. Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.articles.index')
-            ->with('success', 'Artikel baru berhasil disimpan sebagai draft.');
+            ->with('success', 'Artikel baru berhasil disimpan.');
     }
 
     /**
