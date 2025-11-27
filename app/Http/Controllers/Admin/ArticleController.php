@@ -114,18 +114,14 @@ class ArticleController extends Controller
             'is_editors_pick' => $request->has('is_editors_pick'),
         ]);
         if ($request->hasFile('featured_image')) {
-            // Upload gambar baru
             $article->clearMediaCollection('featured_image');
-            $article->addMediaFromRequest('featured_image')->toMediaCollection('featured_image');
-        } elseif ($request->filled('selected_media_id')) {
-            // Gunakan gambar dari pustaka yang sudah ada
-            $media = Media::find($request->input('selected_media_id'));
-            if ($media) {
-                $article->clearMediaCollection('featured_image'); // Hapus yang lama
-                $media->copy($article, 'featured_image'); // Salin media ke artikel ini
-            }
-        } else {
+            $media = $article->addMediaFromRequest('featured_image')
+                ->withCustomProperties([
+                    'caption' => $request->input('featured_image_caption'),
+                ])
+                ->toMediaCollection('featured_image');
         }
+
         $article->tags()->sync($request->input('tags', []));
         return redirect()->route('admin.articles.index')
             ->with('success', 'Artikel baru berhasil disimpan.');
