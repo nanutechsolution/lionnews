@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -25,7 +26,7 @@ Route::middleware(['auth', 'verified'])
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('tags', TagController::class)->except('show');
         Route::resource('users', UserController::class)
-            ->except('show') // Kita tidak perlu halaman 'show'
+            ->except('show')
             ->middleware('can:manage-users');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/tags/search', [TagController::class, 'search'])->name('tags.search');
@@ -48,7 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// === PUBLIC ROUTES (taruh paling bawah) ===
 Route::get('/author/{user}', [PublicController::class, 'authorShow'])->name('author.show');
 Route::get('/tag/{tag:slug}', [PublicController::class, 'tagShow'])->name('tag.show');
 require __DIR__ . '/auth.php';
@@ -56,4 +56,3 @@ Route::get('/category/{category:slug}', [PublicController::class, 'categoryShow'
 Route::get('/read/{category:slug}/{article:slug}', [PublicController::class, 'articleShow'])->name('article.show');
 Route::get('/{page:slug}', [PublicController::class, 'pageShow'])
     ->name('page.show');
-
