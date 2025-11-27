@@ -39,19 +39,19 @@ class DatabaseSeeder extends Seeder
         // ----- 4. Buat User Penting -----
         $admin = User::factory()->admin()->create([
             'name' => 'Redaksi LionNews',
-            'email' => 'gunter@lionnews.com',
+            'email' => 'gunter@lionnews.id',
         ]);
         $admin = User::factory()->admin()->create([
             'name' => 'Redaksi LionNews',
-            'email' => 'gustiloba@lionnews.com',
+            'email' => 'gustiloba@lionnews.id',
         ]);
         $admin = User::factory()->admin()->create([
             'name' => 'Redaksi LionNews',
-            'email' => 'tote@lionnews.com',
+            'email' => 'tote@lionnews.id',
         ]);
         $editor = User::factory()->editor()->create([
             'name' => 'Redaksi LionNews',
-            'email' => 'editor@lionnews.com',
+            'email' => 'editor@lionnews.id',
         ]);
 
         // ----- 6. Buat Kategori Profesional LionNews -----
