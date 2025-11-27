@@ -64,7 +64,7 @@ class ArticleController extends Controller
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required|string',
             'body' => 'required|string',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048',
+            'featured_image' => 'required|image|mimes:jpeg,png,jpg|max:4048',
             'tags'   => 'required|array|min:1',
             'tags.*' => 'integer|exists:tags,id',
             'status' => [ // Validasi status
