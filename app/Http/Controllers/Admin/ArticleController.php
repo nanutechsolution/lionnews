@@ -64,7 +64,9 @@ class ArticleController extends Controller
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required|string',
             'body' => 'required|string',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048', // maks 2MB
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048',
+            'tags'   => 'required|array|min:1',
+            'tags.*' => 'integer|exists:tags,id',
             'status' => [ // Validasi status
                 'nullable', // Boleh null jika jurnalis
                 Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
@@ -79,6 +81,8 @@ class ArticleController extends Controller
             'title.required'  => 'Judul wajib diisi.',
             'category_id.required' => 'Kategori belum dipilih.',
             'body.required' => 'Isi artikel tidak boleh kosong.',
+            'tags.required' => 'Minimal pilih satu tag dulu, biar artikelmu nggak nyasar.',
+            'tags.min'      => 'Pilih minimal satu tag.',
         ]);
 
         $status = Article::STATUS_DRAFT;
