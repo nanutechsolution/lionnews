@@ -72,15 +72,14 @@ class ArticleController extends Controller
             'is_hero_pinned' => 'nullable|boolean',
             'is_editors_pick' => 'nullable|boolean',
         ], [
-        'featured_image.max'   => 'Ukuran gambar terlalu besar. Maksimal 4MB.',
-        'featured_image.image' => 'File yang diunggah harus berupa gambar.',
-        'featured_image.mimes' => 'Format gambar harus JPG atau PNG.',
+            'featured_image.max'   => 'Ukuran gambar terlalu besar. Maksimal 4MB.',
+            'featured_image.image' => 'File yang diunggah harus berupa gambar.',
+            'featured_image.mimes' => 'Format gambar harus JPG atau PNG.',
 
-        'title.required'  => 'Judul wajib diisi.',
-        'category_id.required' => 'Kategori belum dipilih.',
-        'body.required' => 'Isi artikel tidak boleh kosong.',
-    ]);
-        // dd($validatedData);
+            'title.required'  => 'Judul wajib diisi.',
+            'category_id.required' => 'Kategori belum dipilih.',
+            'body.required' => 'Isi artikel tidak boleh kosong.',
+        ]);
 
         $status = Article::STATUS_DRAFT;
         $published_at = null;

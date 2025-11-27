@@ -4,7 +4,7 @@
           transition-shadow duration-300 hover:shadow-xl">
 
     <div class="flex-none w-1/3 md:w-full">
-        <img class="w-full h-full md:h-80 object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') ?: 'https://via.placeholder.com/1200x675?text=LionNews' }}" alt="{{ $article->title }}">
+        <img class="w-full h-full md:h-80 object-cover" src="{{ $article->getFirstMediaUrl('featured_image', 'featured-large') ?: 'https://via.placeholder.com/1200x675?text=LionNews' }}" alt="{{ $article->title }}">
     </div>
 
     <div class="flex-grow w-2/3 md:w-full p-4 md:p-6 flex flex-col justify-center">
