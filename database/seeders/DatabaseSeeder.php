@@ -38,11 +38,19 @@ class DatabaseSeeder extends Seeder
 
         // ----- 4. Buat User Penting -----
         $admin = User::factory()->admin()->create([
-            'name' => 'Admin LionNews',
-            'email' => 'admin@lionnews.com',
+            'name' => 'Redaksi LionNews',
+            'email' => 'gunter@lionnews.com',
+        ]);
+        $admin = User::factory()->admin()->create([
+            'name' => 'Redaksi LionNews',
+            'email' => 'gustiloba@lionnews.com',
+        ]);
+        $admin = User::factory()->admin()->create([
+            'name' => 'Redaksi LionNews',
+            'email' => 'tote@lionnews.com',
         ]);
         $editor = User::factory()->editor()->create([
-            'name' => 'Editor LionNews',
+            'name' => 'Redaksi LionNews',
             'email' => 'editor@lionnews.com',
         ]);
 
@@ -92,10 +100,25 @@ class DatabaseSeeder extends Seeder
 
         // ----- 7. Buat Daftar Tagar (Tags) Awal -----
         $tagNames = [
-            'Berita Sumba','Pasola','Budaya','Kekeringan','Ekonomi','Tenun Ikat',
-            'UMKM','Pariwisata','Konflik Lahan','Infrastruktur','Pariwisata NTT',
-            'Kriminal','Pencurian Ternak','Energi Terbarukan','Sumba Iconic Island',
-            'NTT','Kesehatan','Malaria','Kuda Sandelwood'
+            'Berita Sumba',
+            'Pasola',
+            'Budaya',
+            'Kekeringan',
+            'Ekonomi',
+            'Tenun Ikat',
+            'UMKM',
+            'Pariwisata',
+            'Konflik Lahan',
+            'Infrastruktur',
+            'Pariwisata NTT',
+            'Kriminal',
+            'Pencurian Ternak',
+            'Energi Terbarukan',
+            'Sumba Iconic Island',
+            'NTT',
+            'Kesehatan',
+            'Malaria',
+            'Kuda Sandelwood'
         ];
         foreach ($tagNames as $tagName) {
             Tag::firstOrCreate(
@@ -132,7 +155,7 @@ class DatabaseSeeder extends Seeder
                 'body' => '<p>Kemerdekaan berpendapat, kemerdekaan berekspresi, dan kemerdekaan pers adalah hak asasi manusia yang dilindungi Pancasila, Undang-Undang Dasar 1945, dan Deklarasi Universal Hak Asasi Manusia PBB...</p><h2>1. Ruang Lingkup</h2><p>a. Media Siber adalah segala bentuk media yang menggunakan wahana internet dan melaksanakan kegiatan jurnalistik...</p><p><em>(Silakan salin-tempel teks lengkap dari situs Dewan Pers)</em></p>',
                 'is_published' => true
             ],
-             [
+            [
                 'title' => 'Kontak Kami',
                 'slug' => 'kontak-kami',
                 'body' => '<h2>Kontak Redaksi & Iklan</h2><p>Untuk kerja sama liputan, undangan pers, atau pemasangan iklan, silakan hubungi kami di:</p><p>Email: <strong>redaksi@lionnews.test</strong></p><p>Telepon: <strong>[Nomor Telepon Anda]</strong></p><p>Alamat: <strong>[Alamat Kantor Anda]</strong></p>',
