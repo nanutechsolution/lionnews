@@ -101,14 +101,6 @@
                                       hover:file:bg-brand-primary/20 dark:hover:file:bg-brand-primary/30"
                                     onchange="previewImage(event)">
 
-                                {{-- <button type="button" @click="$dispatch('open-media-library', (selectedMedia) => {
-                                            document.getElementById('imagePreview').src = selectedMedia.url;
-                                            document.getElementById('imagePreview').classList.remove('hidden');
-                                            document.getElementById('selected_media_id').value = selectedMedia.id;
-                                            document.getElementById('featured_image_caption').value = selectedMedia.caption || '';
-                                        })" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition duration-150">
-                                    {{ __('Pilih dari Pustaka') }}
-                                </button> --}}
                             </div>
 
                             <input type="hidden" name="selected_media_id" id="selected_media_id" value="">
@@ -117,7 +109,7 @@
                                 <img id="imagePreview"
                                     src="{{ $article->getFirstMediaUrl('featured_image', 'featured-thumbnail') ?: 'https://via.placeholder.com/400x250?text=No+Image' }}"
                                     alt="Preview Gambar"
-                                    class="max-h-64 rounded-md border border-gray-300 dark:border-gray-600 {{ $article->hasMedia('featured') ? '' : 'hidden' }}" />
+                                    class="max-h-64 rounded-md border border-gray-300 dark:border-gray-600 {{ $article->hasMedia('featured_image') ? '' : 'hidden' }}" />
                             </div>
                         </div>
 
@@ -125,7 +117,7 @@
                             <label for="featured_image_caption"
                                 class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Keterangan Gambar Utama (Credit/Caption)') }}</label>
                             <input id="featured_image_caption" type="text" name="featured_image_caption"
-                                value="{{ old('featured_image_caption', $article->getFirstMedia('featured')?->getCustomProperty('caption')) }}"
+                                value="{{ old('featured_image_caption', $article->getFirstMedia('featured_image')?->getCustomProperty('caption')) }}"
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200
                                           focus:border-brand-accent dark:focus:border-brand-accent
                                           focus:ring-brand-accent dark:focus:ring-brand-accent

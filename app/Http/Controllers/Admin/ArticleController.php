@@ -157,66 +157,122 @@ class ArticleController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Article $article)
     {
-        // 1. Validasi input
+        // ============================
+        // 1. VALIDASI INPUT
+        // ============================
         $validatedData = $request->validate([
             'title' => 'required|string|max:255|unique:articles,title,' . $article->id,
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required|string',
             'body' => 'required|string',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Tambahkan webp
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5048',
+            'featured_image_caption' => 'nullable|string|max:500',
             'status' => [
                 'nullable',
-                Rule::in([Article::STATUS_DRAFT, Article::STATUS_PENDING, Article::STATUS_PUBLISHED]),
-            ]
+                Rule::in([
+                    Article::STATUS_DRAFT,
+                    Article::STATUS_PENDING,
+                    Article::STATUS_PUBLISHED
+                ]),
+            ],
+        ], [
+            // Validasi bahasa Indonesia agar user awam paham
+            'title.required' => 'Judul wajib diisi.',
+            'title.unique' => 'Judul sudah digunakan, silakan pilih judul lain.',
+            'category_id.required' => 'Kategori wajib dipilih.',
+            'excerpt.required' => 'Kutipan singkat wajib diisi.',
+            'body.required' => 'Isi artikel tidak boleh kosong.',
+            'featured_image.image' => 'File harus berupa gambar.',
+            'featured_image.max' => 'Ukuran gambar maksimal 5 MB.',
+            'featured_image_caption.max' => 'Caption maksimal 500 karakter.',
         ]);
 
-        // 2. Handle upload gambar (jika ada gambar baru)
-
+        // ============================
+        // 2. STATUS ARTIKEL (PERMISSION)
+        // ============================
         if (auth()->user()->can('publish-article')) {
             $newStatus = $request->input('status', $article->status);
+
             if ($newStatus === Article::STATUS_PUBLISHED && $article->status !== Article::STATUS_PUBLISHED) {
                 $validatedData['published_at'] = now();
-            } else if ($newStatus !== Article::STATUS_PUBLISHED && $article->status === Article::STATUS_PUBLISHED) {
+            } elseif ($newStatus !== Article::STATUS_PUBLISHED && $article->status === Article::STATUS_PUBLISHED) {
                 $validatedData['published_at'] = null;
             }
+
             $validatedData['status'] = $newStatus;
         } else {
+            // Non-publisher otomatis masuk "Pending"
             $validatedData['status'] = Article::STATUS_PENDING;
             $validatedData['published_at'] = null;
         }
-        // 3. Perbarui slug jika judul berubah
+
+        // ============================
+        // 3. UPDATE SLUG (JIKA JUDUL BERUBAH)
+        // ============================
         if ($validatedData['title'] !== $article->title) {
             $validatedData['slug'] = Str::slug($validatedData['title']);
         }
-        unset($validatedData['featured_image']);
 
+        // ============================
+        // 4. HANDLE CHECKBOX KHUSUS
+        // ============================
         $validatedData['is_hero_pinned'] = $request->has('is_hero_pinned');
         $validatedData['is_editors_pick'] = $request->has('is_editors_pick');
-        // 4. Update data artikel
+
+        // ============================
+        // 5. BUANG INPUT CAPTION AGAR TIDAK MASUK KE TABEL ARTICLES
+        // ============================
+        unset($validatedData['featured_image']);
+        unset($validatedData['featured_image_caption']); // WAJIB
+
+        // ============================
+        // 6. UPDATE ARTIKEL
+        // ============================
         $article->update($validatedData);
+
+        // ============================
+        // 7. HANDLE GAMBAR UTAMA
+        // ============================
         if ($request->hasFile('featured_image')) {
+
+            // Hapus media lama
+            $oldMedia = $article->getFirstMedia('featured_image');
+            if ($oldMedia) {
+                $oldMedia->delete();
+            }
+
+            // Upload media baru + caption
             $article
                 ->addMediaFromRequest('featured_image')
-                ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
+                ->withCustomProperties([
+                    'caption' => $request->input('featured_image_caption')
+                ])
                 ->toMediaCollection('featured_image');
         } else if ($request->filled('featured_image_caption')) {
-            // Ambil media yang ada dan perbarui saja propertinya
+
+            // Update caption media lama jika tidak upload gambar baru
             $media = $article->getFirstMedia('featured_image');
             if ($media) {
                 $media->setCustomProperty('caption', $request->input('featured_image_caption'));
-                $media->save(); // Jangan lupa simpan
+                $media->save();
             }
         }
+
+        // ============================
+        // 8. SYNC TAG
+        // ============================
         $article->tags()->sync($request->input('tags', []));
-        // 5. Redirect kembali ke halaman index
-        return redirect()->route('admin.articles.index')
+
+        // ============================
+        // 9. REDIRECT
+        // ============================
+        return redirect()
+            ->route('admin.articles.index')
             ->with('success', 'Artikel berhasil diperbarui.');
     }
+
 
     /**
      * Remove the specified resource from storage.
