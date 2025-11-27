@@ -202,12 +202,11 @@ class ArticleController extends Controller
         if ($request->hasFile('featured_image')) {
             $article
                 ->addMediaFromRequest('featured_image')
-                // TAMBAHKAN BARIS INI:
                 ->withCustomProperties(['caption' => $request->input('featured_image_caption')])
-                ->toMediaCollection('featured');
+                ->toMediaCollection('featured_image');
         } else if ($request->filled('featured_image_caption')) {
             // Ambil media yang ada dan perbarui saja propertinya
-            $media = $article->getFirstMedia('featured');
+            $media = $article->getFirstMedia('featured_image');
             if ($media) {
                 $media->setCustomProperty('caption', $request->input('featured_image_caption'));
                 $media->save(); // Jangan lupa simpan
