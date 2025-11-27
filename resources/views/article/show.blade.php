@@ -70,13 +70,13 @@
         </button>
     </div>
     </div>
-        @if($article->hasMedia('featured'))
+        @if($article->hasMedia('featured_image'))
         <figure class="mt-8">
-            <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured', 'featured-large') }}" alt="{{ $article->title }}">
+            <img class="w-full rounded-lg object-cover" src="{{ $article->getFirstMediaUrl('featured_image', 'featured-large') }}" alt="{{ $article->title }}">
 
             @php
             // Ambil caption dari custom properties media
-            $caption = $article->getFirstMedia('featured')->getCustomProperty('caption');
+            $caption = $article->getFirstMedia('featured_image')->getCustomProperty('caption');
             @endphp
 
             @if($caption)

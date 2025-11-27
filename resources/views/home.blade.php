@@ -1,6 +1,6 @@
 <x-public-layout>
-    
-    @if($heroArticle)
+
+    @if ($heroArticle)
         <div class="mb-6">
             <x-article-hero-card :article="$heroArticle" />
         </div>
@@ -10,15 +10,17 @@
         <h2 class="text-xl font-bold text-brand-primary dark:text-brand-accent font-heading mb-3">
             Sedang Populer
         </h2>
-        
+
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
             <ol class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($popularArticles as $index => $article)
                     <li class="p-4 flex items-center group">
                         <span class="text-2xl font-bold text-gray-300 dark:text-gray-600 mr-4">{{ $index + 1 }}</span>
-                        
-                        <a href="{{ route('article.show', [$article->category->slug, $article->slug]) }}" class="flex-1 min-w-0">
-                            <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-brand-primary dark:group-hover:text-brand-accent leading-tight line-clamp-2">
+
+                        <a href="{{ route('article.show', [$article->category->slug, $article->slug]) }}"
+                            class="flex-1 min-w-0">
+                            <h3
+                                class="font-semibold text-gray-900 dark:text-white group-hover:text-brand-primary dark:group-hover:text-brand-accent leading-tight line-clamp-2">
                                 {{ $article->title }}
                             </h3>
                             <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -38,9 +40,9 @@
             Pilihan Editor
         </h2>
     </div>
-    
+
     <div class="flex overflow-x-auto gap-4 pb-4 horizontal-scrollbar">
-        @foreach($topGridArticles as $article)
+        @foreach ($topGridArticles as $article)
             <div class="flex-none w-80 md:w-1/4">
                 <x-article-card :article="$article" />
             </div>
