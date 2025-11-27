@@ -96,7 +96,7 @@
                             <input type="hidden" name="selected_media_id" id="selected_media_id" value="">
 
                             <div class="mt-2">
-                                <img id="imagePreview" src="{{ $article->getFirstMediaUrl('featured', 'featured-thumbnail') ?: 'https://via.placeholder.com/400x250?text=No+Image' }}" alt="Preview Gambar" class="max-h-64 rounded-md border border-gray-300 dark:border-gray-600 {{ $article->hasMedia('featured') ? '' : 'hidden' }}" />
+                                <img id="imagePreview" src="{{ $article->getFirstMediaUrl('featured_image', 'featured-thumbnail') ?: 'https://via.placeholder.com/400x250?text=No+Image' }}" alt="Preview Gambar" class="max-h-64 rounded-md border border-gray-300 dark:border-gray-600 {{ $article->hasMedia('featured') ? '' : 'hidden' }}" />
                             </div>
                         </div>
 
