@@ -74,6 +74,7 @@ class ArticleController extends Controller
             'is_hero_pinned' => 'nullable|boolean',
             'is_editors_pick' => 'nullable|boolean',
         ], [
+            'featured_image.required'   => 'Gambar Wajib.',
             'featured_image.max'   => 'Ukuran gambar terlalu besar. Maksimal 4MB.',
             'featured_image.image' => 'File yang diunggah harus berupa gambar.',
             'featured_image.mimes' => 'Format gambar harus JPG atau PNG.',
