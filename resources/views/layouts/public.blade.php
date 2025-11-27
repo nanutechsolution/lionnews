@@ -32,6 +32,9 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1183290597740176"
+     crossorigin="anonymous"></script>
 </head>
 
 <body class="font-sans antialiased text-gray-900 bg-brand-base dark:bg-gray-900 dark:text-gray-200">
