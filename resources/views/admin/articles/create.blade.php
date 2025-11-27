@@ -162,77 +162,66 @@
             </div>
         </div>
     </div>
+
     @push('scripts')
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const form = document.getElementById("articleForm");
-                const fields = ["title", "excerpt", "featured_image_caption"];
-
                 // Restore simple inputs
                 fields.forEach(id => {
                     const el = document.getElementById(id);
                     if (el && localStorage.getItem(id)) {
-                        el.value = localStorage.getItem(id);
+                    if (!el) return;
+
+                    const saved = localStorage.getItem('article_' + id);
+
+                    if (saved !== null) {
+                        if (el.type === 'checkbox') {
+                            el.checked = saved === '1';
+                        } else {
+                            el.value = saved;
+                        }
                     }
-                    el?.addEventListener("input", () => {
-                        localStorage.setItem(id, el.value);
-                    });
                 });
 
-                // Restore category dropdown
-                const category = document.getElementById("category_id");
-                if (category) {
-                    const savedCategory = localStorage.getItem("category_id");
-                    if (savedCategory) category.value = savedCategory;
+                // ======== RESTORE QUILL ========
+                const quillInterval = setInterval(() => {
+                    const quillRoot = document.querySelector('.ql-editor');
+                    const saved = localStorage.getItem('article_body');
 
-                    category.addEventListener("change", () => {
-                        localStorage.setItem("category_id", category.value);
-                    });
-                }
-
-                // Restore tags (TomSelect)
-                document.addEventListener("tomselect:ready", () => {
-                    const savedTags = JSON.parse(localStorage.getItem("tags") || "[]");
-                    const ts = window.tagSelector;
-
-                    ts?.addOptions(savedTags.map(t => ({
-                        value: t,
-                        text: t
-                    })));
-                    ts?.setValue(savedTags);
-
-                    ts?.on("change", () => {
-                        localStorage.setItem("tags", JSON.stringify(ts.getValue()));
-                    });
-                });
-
-                // Restore Quill content
-                document.addEventListener("quill:ready", () => {
-                    const savedBody = localStorage.getItem("body");
-                    if (savedBody) {
-                        window.quill.root.innerHTML = savedBody;
+                    if (quillRoot && saved) {
+                        quillRoot.innerHTML = saved;
+                        clearInterval(quillInterval);
                     }
+                }, 300);
 
-                    window.quill.on("text-change", () => {
-                        localStorage.setItem("body", window.quill.root.innerHTML);
+                // ======== AUTO SAVE ========
+                setInterval(() => {
+                    fields.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (!el) return;
+
+                        if (el.type === 'checkbox') {
+                            localStorage.setItem('article_' + id, el.checked ? '1' : '0');
+                        } else {
+                            localStorage.setItem('article_' + id, el.value);
+                        }
                     });
+
+                    // Save body Quill
+                    const body = document.querySelector('.ql-editor')?.innerHTML ?? '';
+                    localStorage.setItem('article_body', body);
+
+                }, 1500);
+
+                // ======== CLEAR STORAGE on submit ========
+                const form = document.querySelector('form');
+                form.addEventListener('submit', () => {
+                    fields.forEach(id => localStorage.removeItem('article_' + id));
+                    localStorage.removeItem('article_body');
                 });
 
-                // Clear localStorage when submitting
-                form.addEventListener("submit", () => {
-                    localStorage.removeItem("title");
-                    localStorage.removeItem("excerpt");
-                    localStorage.removeItem("category_id");
-                    localStorage.removeItem("body");
-                    localStorage.removeItem("tags");
-                    localStorage.removeItem("featured_image_caption");
-                });
             });
         </script>
-    @endpush
 
-
-    @push('scripts')
         <script>
             function previewImage(event) {
                 const input = event.target;
