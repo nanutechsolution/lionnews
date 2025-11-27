@@ -41,8 +41,21 @@
                         <div class="mt-4" wire:ignore x-data="tomselect({ initialTags: [] })" x-init="init()">
                             <label for="tags"
                                 class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('Tags') }}</label>
+
                             <select id="tags" name="tags[]" multiple class="block mt-1 w-full" x-ref="tomselect"
                                 placeholder="Ketik untuk mencari tag..."></select>
+
+                            {{-- Pesan Penjelasan untuk User Awam --}}
+                            <p class="text-xs text-gray-500 mt-1">
+                                Pilih minimal satu tag agar artikel mudah ditemukan pembaca.
+                            </p>
+
+                            {{-- ERROR VALIDATION --}}
+                            @if ($errors->has('tags'))
+                                <p class="text-red-500 text-sm mt-2 font-semibold">
+                                    {{ $errors->first('tags') }}
+                                </p>
+                            @endif
                         </div>
 
                         <div class="mt-4">
