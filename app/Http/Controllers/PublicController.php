@@ -119,7 +119,6 @@ class PublicController extends Controller
                 'author' => $article->user->name,
             ]);
 
-        // PERBAIKAN: Hanya tambahkan gambar jika ada
         if ($article->hasMedia('featured_image')) {
             OpenGraph::addImage($article->getFirstMediaUrl('featured_image', 'featured-large'));
         }
@@ -131,10 +130,10 @@ class PublicController extends Controller
             ->setDescription($article->excerpt)
             ->setImages($article->hasMedia('featured_image') ? [$article->getFirstMediaUrl('featured_image', 'featured-large')] : []);
         $relatedArticles = Article::where('category_id', $article->category_id)
-            ->where('status', 'published')  // Hanya yang sudah terbit
-            ->where('id', '!=', $article->id) // <-- PENTING: Kecualikan artikel ini
-            ->latest('published_at') // Ambil yang terbaru
-            ->take(3) // Batasi 3 artikel
+            ->where('status', 'published')  
+            ->where('id', '!=', $article->id) 
+            ->latest('published_at') 
+            ->take(3) 
             ->get();
         // Kirim data artikel ke view
 
