@@ -16,7 +16,17 @@
             </h3>
         </a>
 
-        <h1 class="mt-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl font-heading">
+        <h1
+            class="mt-2 
+           text-2xl           <!-- ukuran nyaman di hp -->
+           sm:text-4xl        <!-- naik di tablet -->
+           md:text-5xl        <!-- naik lagi di desktop -->
+           font-bold 
+           leading-snug       <!-- rapet tapi tetap enak dibaca di mobile -->
+           tracking-tight 
+           text-gray-900 
+           dark:text-white 
+           font-heading">
             {{ $article->title }}
         </h1>
 
