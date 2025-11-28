@@ -14,13 +14,14 @@
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
 
             <form method="POST" action="{{ route('admin.articles.store') }}" enctype="multipart/form-data"
-                  class="space-y-10">
+                class="space-y-10">
                 @csrf
 
                 {{-- =============================== --}}
                 {{-- SECTION: Informasi Dasar --}}
                 {{-- =============================== --}}
-                <section class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
+                <section
+                    class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
 
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">
                         🧩 Informasi Dasar
@@ -50,7 +51,8 @@
 
                     {{-- Category --}}
                     <div class="mb-6">
-                        <label for="category_id" class="block mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
+                        <label for="category_id"
+                            class="block mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
                             Kategori
                         </label>
 
@@ -61,7 +63,7 @@
                             <option value="">— Pilih kategori —</option>
 
                             @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" 
+                                <option value="{{ $category->id }}"
                                     {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
@@ -88,16 +90,12 @@
                             <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
-
                 </section>
-
-
-
-
                 {{-- =============================== --}}
                 {{-- SECTION: Konten Artikel --}}
                 {{-- =============================== --}}
-                <section class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
+                <section
+                    class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
 
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">
                         📝 Konten Artikel
@@ -129,16 +127,12 @@
 
                         <x-input-error :messages="$errors->get('body')" class="mt-2 text-red-500" />
                     </div>
-
                 </section>
-
-
-
-
                 {{-- =============================== --}}
                 {{-- SECTION: Gambar Utama --}}
                 {{-- =============================== --}}
-                <section class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
+                <section
+                    class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
 
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">
                         🖼️ Gambar Utama
@@ -146,7 +140,8 @@
 
                     {{-- Upload --}}
                     <div class="mb-6">
-                        <label for="featured_image" class="block mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
+                        <label for="featured_image"
+                            class="block mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
                             Upload Gambar
                         </label>
 
@@ -159,12 +154,14 @@
 
                         <x-input-error :messages="$errors->get('featured_image')" class="mt-2 text-red-500" />
 
-                        <img id="imagePreview" class="hidden rounded-md mt-4 max-h-72 border border-gray-300 dark:border-gray-600" />
+                        <img id="imagePreview"
+                            class="hidden rounded-md mt-4 max-h-72 border border-gray-300 dark:border-gray-600" />
                     </div>
 
                     {{-- Caption --}}
                     <div class="mb-2">
-                        <label for="featured_image_caption" class="block mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
+                        <label for="featured_image_caption"
+                            class="block mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
                             Caption / Credit
                         </label>
 
@@ -183,7 +180,8 @@
                 {{-- =============================== --}}
                 {{-- SECTION: Status & Pin --}}
                 {{-- =============================== --}}
-                <section class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
+                <section
+                    class="bg-white dark:bg-gray-800 shadow-md sm:rounded-xl p-8 border border-gray-200 dark:border-gray-700">
 
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">
                         🚦 Pengaturan Publikasi
@@ -221,12 +219,7 @@
                             <span class="font-medium">Pilihan Editor</span>
                         </label>
                     </div>
-
                 </section>
-
-
-
-
                 {{-- =============================== --}}
                 {{-- SUBMIT --}}
                 {{-- =============================== --}}
