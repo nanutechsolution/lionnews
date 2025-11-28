@@ -98,19 +98,24 @@ class PublicController extends Controller
      */
     public function articleShow(Category $category, Article $article)
     {
+        // Catat view
         views($article)->record();
 
-        // Pastikan artikel yang diakses sudah 'published'
-        // (Atau admin yang sedang login)
+        // Hanya published kecuali admin
         if ($article->status !== 'published' && !auth()->check()) {
             abort(404);
         }
 
-
+        // ======================
+        // SEO META
+        // ======================
         SEOMeta::setTitle($article->title);
         SEOMeta::setDescription($article->excerpt);
         SEOMeta::setCanonical(route('article.show', [$category->slug, $article->slug]));
 
+        // ======================
+        // OPEN GRAPH
+        // ======================
         OpenGraph::setTitle($article->title)
             ->setDescription($article->excerpt)
             ->setType('article')
@@ -119,30 +124,60 @@ class PublicController extends Controller
                 'author' => $article->user->name,
             ]);
 
-        // PERBAIKAN: Hanya tambahkan gambar jika ada
         if ($article->hasMedia('featured_image')) {
-            OpenGraph::addImage($article->getFirstMediaUrl('featured_image', 'featured-large'));
+            $image = $article->getFirstMediaUrl('featured_image', 'featured-large');
+
+            // WAJIB agar tidak muncul warning FB: og:image harus explicit
+            OpenGraph::setImage($image);
+
+            // Versi lengkap metadata image
+            OpenGraph::addImage([
+                'url' => $image,
+                'width' => 1200,
+                'height' => 630,
+                'type' => 'image/jpeg'
+            ]);
+
+            // ======================
+            // TWITTER CARD
+            // ======================
+            TwitterCard::setImage($image);
         }
 
         TwitterCard::setTitle($article->title);
+        TwitterCard::setDescription($article->excerpt);
 
+        // ======================
+        // JSON-LD
+        // ======================
         JsonLd::setType('Article')
             ->setTitle($article->title)
             ->setDescription($article->excerpt)
-            ->setImages($article->hasMedia('featured_image') ? [$article->getFirstMediaUrl('featured_image', 'featured-large')] : []);
-        $relatedArticles = Article::where('category_id', $article->category_id)
-            ->where('status', 'published')  // Hanya yang sudah terbit
-            ->where('id', '!=', $article->id) // <-- PENTING: Kecualikan artikel ini
-            ->latest('published_at') // Ambil yang terbaru
-            ->take(3) // Batasi 3 artikel
-            ->get();
-        // Kirim data artikel ke view
+            ->setImages(
+                $article->hasMedia('featured_image')
+                    ? [$article->getFirstMediaUrl('featured_image', 'featured-large')]
+                    : []
+            );
 
+        // ======================
+        // RELATED ARTICLES
+        // ======================
+        $relatedArticles = Article::where('category_id', $article->category_id)
+            ->where('status', 'published')
+            ->where('id', '!=', $article->id)
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        // ======================
+        // VIEW
+        // ======================
         return view('article.show', [
             'article' => $article,
             'relatedArticles' => $relatedArticles
         ]);
     }
+
 
 
     /**
