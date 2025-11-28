@@ -18,11 +18,11 @@
 
         <h1
             class="mt-2 
-           text-2xl           <!-- ukuran nyaman di hp -->
-           sm:text-4xl        <!-- naik di tablet -->
-           md:text-5xl        <!-- naik lagi di desktop -->
+           text-2xl           
+           sm:text-4xl        
+           md:text-5xl      
            font-bold 
-           leading-snug       <!-- rapet tapi tetap enak dibaca di mobile -->
+           leading-snug       
            tracking-tight 
            text-gray-900 
            dark:text-white 
