@@ -13,6 +13,7 @@ use CyrildeWit\EloquentViewable\InteractsWithViews;
 use CyrildeWit\EloquentViewable\Contracts\Viewable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Image\Enums\Fit;
 
 class Article extends Model implements HasMedia, Viewable
 {
@@ -95,6 +96,12 @@ class Article extends Model implements HasMedia, Viewable
             ->width(1200)
             ->height(675)
             ->nonQueued();
+
+        $this->addMediaConversion('og-image')
+            ->fit(Fit::Crop, 600, 600) // Ukuran kotak (WA suka kotak)
+            ->quality(70)              // Kualitas diturunkan sedikit agar size < 300KB
+            ->optimize()
+            ->nonQueued();
     }
 
 
@@ -114,7 +121,7 @@ class Article extends Model implements HasMedia, Viewable
     protected function processedBody(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => $this->embedVideos($attributes['body']),
+            get: fn($value, $attributes) => $this->embedVideos($attributes['body']),
         );
     }
 
