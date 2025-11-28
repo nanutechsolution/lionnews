@@ -120,8 +120,8 @@ class PublicController extends Controller
             ]);
 
         // PERBAIKAN: Hanya tambahkan gambar jika ada
-        if ($article->hasMedia('featured')) {
-            OpenGraph::addImage($article->getFirstMediaUrl('featured', 'featured-large'));
+        if ($article->hasMedia('featured_image')) {
+            OpenGraph::addImage($article->getFirstMediaUrl('featured_image', 'featured-large'));
         }
 
         TwitterCard::setTitle($article->title);
@@ -129,7 +129,7 @@ class PublicController extends Controller
         JsonLd::setType('Article')
             ->setTitle($article->title)
             ->setDescription($article->excerpt)
-            ->setImages($article->hasMedia('featured') ? [$article->getFirstMediaUrl('featured', 'featured-large')] : []);
+            ->setImages($article->hasMedia('featured_image') ? [$article->getFirstMediaUrl('featured_image', 'featured-large')] : []);
         $relatedArticles = Article::where('category_id', $article->category_id)
             ->where('status', 'published')  // Hanya yang sudah terbit
             ->where('id', '!=', $article->id) // <-- PENTING: Kecualikan artikel ini
@@ -264,8 +264,8 @@ class PublicController extends Controller
                 })
                     // 2. ATAU anak-anaknya memiliki artikel (jika ini Kategori Induk)
                     ->orWhereHas('children.articles', function ($subQuery) {
-                    $subQuery->where('status', Article::STATUS_PUBLISHED);
-                });
+                        $subQuery->where('status', Article::STATUS_PUBLISHED);
+                    });
             })
             ->orderBy('name', 'asc')
             ->get();
