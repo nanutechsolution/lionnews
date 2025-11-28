@@ -121,19 +121,8 @@ class PublicController extends Controller
 
         // PERBAIKAN: Hanya tambahkan gambar jika ada
         if ($article->hasMedia('featured_image')) {
-            $image = $article->getFirstMediaUrl('featured_image', 'featured-large');
-
-            OpenGraph::addImage($image);
-            OpenGraph::addImage([
-                'url' => $image,
-                'width' => 1200,
-                'height' => 630,
-                'type' => 'image/jpeg'
-            ]);
-
-            TwitterCard::setImage($image);
+            OpenGraph::addImage($article->getFirstMediaUrl('featured_image', 'featured-large'));
         }
-
 
         TwitterCard::setTitle($article->title);
 
