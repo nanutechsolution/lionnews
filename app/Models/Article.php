@@ -102,6 +102,11 @@ class Article extends Model implements HasMedia, Viewable
             ->quality(70)              // Kualitas diturunkan sedikit agar size < 300KB
             ->optimize()
             ->nonQueued();
+        $this->addMediaConversion('thumb')
+            ->fit(Fit::Crop, 300, 300)
+            ->format('webp')
+            ->quality(70)
+            ->nonQueued();
     }
 
 
