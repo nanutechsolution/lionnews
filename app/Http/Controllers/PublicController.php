@@ -98,20 +98,23 @@ class PublicController extends Controller
      */
     public function articleShow(Category $category, Article $article)
     {
+        // 1. Record View
         views($article)->record();
 
-        // Pastikan artikel yang diakses sudah 'published'
-        // (Atau admin yang sedang login)
+        // 2. Cek Status Published
         if ($article->status !== 'published' && !auth()->check()) {
             abort(404);
         }
 
+        // --- SETUP SEO & META TAGS ---
 
+        // Basic Meta
         SEOMeta::setTitle($article->title);
         SEOMeta::setDescription($article->excerpt);
         SEOMeta::setCanonical(route('article.show', [$category->slug, $article->slug]));
 
-        OpenGraph::setTitle($article->title)
+        // OpenGraph (Facebook, LinkedIn, dll)
+        $og = OpenGraph::setTitle($article->title)
             ->setDescription($article->excerpt)
             ->setType('article')
             ->setArticle([
@@ -119,23 +122,52 @@ class PublicController extends Controller
                 'author' => $article->user->name,
             ]);
 
+        // --- LOGIKA GAMBAR (SOLUSI WA) ---
         if ($article->hasMedia('featured_image')) {
-            OpenGraph::addImage($article->getFirstMediaUrl('featured_image', 'featured-large'));
+            // Cek apakah versi 'og-image' (yang ringan) sudah digenerate?
+            // Jika belum (artikel lama), pakai fallback 'featured-large'
+            // 'featured_image' adalah nama collection Anda
+            $mediaItem = $article->getFirstMedia('featured_image');
+
+            if ($mediaItem) {
+                // Tentukan URL gambar mana yang dipakai
+                // Prioritaskan 'og-image' agar WA loading cepat
+                $imageUrl = $mediaItem->hasGeneratedConversion('og-image')
+                    ? $mediaItem->getUrl('og-image')
+                    : $mediaItem->getUrl('featured-large');
+
+                // Masukkan ke OpenGraph dengan detail Size
+                // WA akan lebih 'percaya' kalau ada properti width/height
+                OpenGraph::addImage($imageUrl, [
+                    'height' => 600,
+                    'width' => 600,
+                    'type' => $mediaItem->mime_type // misal: image/jpeg
+                ]);
+
+                // Set juga untuk Twitter & Schema Google
+                TwitterCard::setImage($imageUrl);
+
+                JsonLd::setType('Article')
+                    ->setTitle($article->title)
+                    ->setDescription($article->excerpt)
+                    ->setImages([$imageUrl]);
+            }
+        } else {
+            // Opsi: Jika artikel tidak ada gambar, pakai Logo Kampus default
+            // OpenGraph::addImage(asset('images/logo-unmaris-square.jpg'));
         }
 
+        // --- SET TWITTER CARD ---
         TwitterCard::setTitle($article->title);
+        // Note: setImage sudah dihandle di blok if di atas
 
-        JsonLd::setType('Article')
-            ->setTitle($article->title)
-            ->setDescription($article->excerpt)
-            ->setImages($article->hasMedia('featured_image') ? [$article->getFirstMediaUrl('featured_image', 'featured-large')] : []);
+        // --- QUERY ARTIKEL TERKAIT ---
         $relatedArticles = Article::where('category_id', $article->category_id)
-            ->where('status', 'published')  
-            ->where('id', '!=', $article->id) 
-            ->latest('published_at') 
-            ->take(3) 
+            ->where('status', 'published')
+            ->where('id', '!=', $article->id)
+            ->latest('published_at')
+            ->take(3)
             ->get();
-        // Kirim data artikel ke view
 
         return view('article.show', [
             'article' => $article,
